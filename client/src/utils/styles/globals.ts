@@ -1,7 +1,7 @@
 import styled, { createGlobalStyle } from 'styled-components'
 
 // import Colors from './colors'
-// import Fonts from "../styles/fonts";
+import Fonts from '../styles/fonts'
 
 export const responsiveDesktop = '1000px'
 export const responsiveTablet = '760px'
@@ -58,4 +58,9 @@ export const View = styled.section`
   display: flex;
   width: 100%;
   height: fit-content;
+`
+
+export const Subtitle = styled.h2`
+  font-size: ${Fonts.large};
+  font-weight: 200;
 `

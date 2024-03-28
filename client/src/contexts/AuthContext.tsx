@@ -23,7 +23,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // =================================================================
 
   const isUserLogged = useMemo(() => {
-    return true
+    return false
   }, [])
 
   // =================================================================
