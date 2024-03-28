@@ -11,30 +11,20 @@ const handleSignup = async ({
   userNick,
   userPassword
 }: ISignupForm) => {
-  try {
-    const response = await api.post('/signup', {
-      userName: userName,
-      userNick: userNick,
-      userPassword: userPassword
-    })
-    return response.data
-  } catch (error) {
-    console.error('Erro ao fazer login:', error)
-    throw error
-  }
+  const response = await api.post('/signup', {
+    userName: userName,
+    userNick: userNick,
+    userPassword: userPassword
+  })
+  return response.data
 }
 
 const handleSignin = async ({ userNick, userPassword }: ISigninForm) => {
-  try {
-    const response = await api.post('/signin', {
-      userName: userNick,
-      userPassword: userPassword
-    })
-    return response.data
-  } catch (error) {
-    console.error('Erro ao fazer login:', error)
-    throw error
-  }
+  const response = await api.post('/signin', {
+    userNick: userNick,
+    userPassword: userPassword
+  })
+  return response.data
 }
 
 export { handleSignup, handleSignin }

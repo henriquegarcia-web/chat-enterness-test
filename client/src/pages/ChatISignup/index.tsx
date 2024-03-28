@@ -10,8 +10,9 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
+import { useToast } from '@/components/ui/use-toast'
 
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 
 import { handleSignup } from '@/api'
 
@@ -20,36 +21,44 @@ import { InputField } from '@/components'
 
 const ChatISignupPage = () => {
   const navigate = useNavigate()
+  const { toast } = useToast()
 
   const [signupIsLoading, setSignupIsLoading] = useState(false)
 
   const { control, handleSubmit, reset, formState } = useForm<ISignupForm>({
-    defaultValues: { userNick: '', userPassword: '' }
+    defaultValues: { userName: '', userNick: '', userPassword: '' }
   })
+
+  const { isValid } = formState
 
   const handleSignupForm = async (data: ISignupForm) => {
     setSignupIsLoading(true)
 
-    try {
-      const response = await handleSignup({
-        userName: data.userName,
-        userNick: data.userNick,
-        userPassword: data.userPassword
+    const response = await handleSignup({
+      userName: data.userName,
+      userNick: data.userNick,
+      userPassword: data.userPassword
+    })
+
+    const signupResponse = response.successful
+
+    setSignupIsLoading(false)
+
+    if (signupResponse) {
+      reset()
+      // navigate('/chat')
+      toast({
+        title: 'Sucesso',
+        description: response.msg
       })
-      const signupResponse = response.data
-
-      setSignupIsLoading(false)
-
-      if (signupResponse) {
-        reset()
-        navigate('/chat')
-      } else {
-        throw new Error('The search term does not exist.')
-      }
-    } catch (error) {
-      console.error(error)
-      setSignupIsLoading(false)
+    } else {
+      toast({
+        title: 'Falha',
+        description: response.msg
+      })
     }
+
+    setSignupIsLoading(false)
   }
 
   return (
@@ -89,7 +98,9 @@ const ChatISignupPage = () => {
             <Button variant="outline" onClick={() => navigate('/entrar')}>
               Já tenho conta
             </Button>
-            <Button type="submit">Cadastrar</Button>
+            <Button type="submit" disabled={!isValid || signupIsLoading}>
+              Cadastrar
+            </Button>
           </CardFooter>
         </form>
       </Card>

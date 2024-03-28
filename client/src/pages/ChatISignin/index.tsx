@@ -11,8 +11,9 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
+import { useToast } from '@/components/ui/use-toast'
 
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 
 import { handleSignin } from '@/api'
 
@@ -20,6 +21,7 @@ import { ISigninForm } from '@/@types/api'
 
 const ChatISigninPage = () => {
   const navigate = useNavigate()
+  const { toast } = useToast()
 
   const [signinIsLoading, setSigninIsLoading] = useState(false)
 
@@ -27,30 +29,37 @@ const ChatISigninPage = () => {
     defaultValues: { userNick: '', userPassword: '' }
   })
 
+  const { isValid } = formState
+
   const handleSigninForm = async (data: ISigninForm) => {
     setSigninIsLoading(true)
 
-    console.log(data)
+    try {
+      const response = await handleSignin({
+        userNick: data.userNick,
+        userPassword: data.userPassword
+      })
+      const signinResponse = response.successful
 
-    // try {
-    //   const response = await handleSignin({
-    //     userNick: data.userNick,
-    //     userPassword: data.userPassword
-    //   })
-    //   const signinResponse = response.data
+      setSigninIsLoading(false)
 
-    //   setSigninIsLoading(false)
-
-    //   if (signinResponse) {
-    //     reset()
-    //     navigate('/chat')
-    //   } else {
-    //     throw new Error('The search term does not exist.')
-    //   }
-    // } catch (error) {
-    //   console.error(error)
-    //   setSigninIsLoading(false)
-    // }
+      if (signinResponse) {
+        reset()
+        // navigate('/chat')
+        toast({
+          title: 'Sucesso',
+          description: response.msg
+        })
+      } else {
+        toast({
+          title: 'Falha',
+          description: response.msg
+        })
+      }
+    } catch (error) {
+      console.error(error)
+      setSigninIsLoading(false)
+    }
   }
 
   return (
@@ -84,7 +93,9 @@ const ChatISigninPage = () => {
             <Button variant="outline" onClick={() => navigate('/cadastrar')}>
               Não tenho cadastro
             </Button>
-            <Button type="submit">Entrar</Button>
+            <Button type="submit" disabled={!isValid || signinIsLoading}>
+              Entrar
+            </Button>
           </CardFooter>
         </form>
       </Card>

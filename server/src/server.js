@@ -14,6 +14,7 @@ const cors = require('cors')
 const moment = require('moment')
 
 const bcrypt = require('bcrypt')
+const saltRounds = 10
 
 app.use(express.json())
 app.use(bodyParser.json())
@@ -77,59 +78,64 @@ io.on('connection', (socket) => {
 app.post('/signup', async (req, res) => {
   const { userName, userNick, userPassword } = req.body
 
-  try {
-    const verificaUsuarioQuery = 'SELECT * FROM users WHERE user_name = ?'
-    const results = await db.query(verificaUsuarioQuery, [userName])
+  db.query(
+    'SELECT * FROM users WHERE user_nick = ?',
+    [userNick],
+    (err, result) => {
+      if (err) {
+        res.send(err)
+      }
+      if (result.length == 0) {
+        bcrypt.hash(userPassword, saltRounds, (err, hash) => {
+          db.query(
+            'INSERT INTO users (user_name, user_nick, user_password) VALUE (?,?,?)',
+            [userName, userNick, hash],
+            (error, response) => {
+              if (err) {
+                res.send(err)
+              }
 
-    if (results.length > 0) {
-      res.status(409).json({ error: 'Nome de usuário já existe' })
-      return
+              res.send({ msg: 'Usuário cadastrado com sucesso' })
+            }
+          )
+        })
+      } else {
+        res.send({ msg: 'Usuário já cadastrado' })
+      }
     }
-
-    const hashedPassword = await bcrypt.hash(userPassword, 10)
-
-    const signupUserQuery =
-      'INSERT INTO users (user_name, user_nick, user_password) VALUES (?, ?)'
-    await db.query(signupUserQuery, [userName, userNick, hashedPassword])
-
-    res.status(201).json({ message: 'Usuário cadastrado com sucesso' })
-  } catch (error) {
-    console.log('Erro ao cadastrar usuário:', error)
-    res.status(500).json({ error: 'Erro ao cadastrar usuário' })
-  }
+  )
 })
 
 app.post('/signin', async (req, res) => {
-  const { userName, userPassword } = req.body
+  const { userNick, userPassword } = req.body
 
-  try {
-    const buscaUsuarioQuery = 'SELECT * FROM users WHERE user_name = ?'
-    const results = await db.query(buscaUsuarioQuery, [userName])
-
-    if (results.length === 0) {
-      res.status(401).json({ error: 'Nome de usuário ou senha incorretos' })
-      return
+  db.query(
+    'SELECT * FROM users WHERE user_nick = ?',
+    [userNick],
+    (err, result) => {
+      if (err) {
+        res.send(err)
+      }
+      if (result.length > 0) {
+        bcrypt.compare(
+          userPassword,
+          result[0].user_password,
+          (error, response) => {
+            if (error) {
+              res.send(error)
+            }
+            if (response) {
+              res.send({ msg: 'Usuário logado' })
+            } else {
+              res.send({ msg: 'Senha incorreta' })
+            }
+          }
+        )
+      } else {
+        res.send({ msg: 'Usuário não registrado!' })
+      }
     }
-
-    const usuario = results[0]
-
-    const senhaCorrespondente = await bcrypt.compare(
-      userPassword,
-      usuario.user_password
-    )
-
-    if (!senhaCorrespondente) {
-      res.status(401).json({ error: 'Nome de usuário ou senha incorretos' })
-      return
-    }
-
-    res
-      .status(200)
-      .json({ message: 'Login bem-sucedido', user_id: usuario.user_id })
-  } catch (error) {
-    console.log('Erro ao verificar credenciais:', error)
-    res.status(500).json({ error: 'Erro ao verificar credenciais' })
-  }
+  )
 })
 
 app.get('/rooms', (req, res) => {

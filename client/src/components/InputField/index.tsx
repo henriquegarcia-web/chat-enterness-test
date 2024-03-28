@@ -1,5 +1,5 @@
-import { ChangeEvent, useState } from 'react'
-import { Controller, FieldError } from 'react-hook-form'
+import { useState } from 'react'
+import { Controller } from 'react-hook-form'
 
 import { FiEye, FiEyeOff } from 'react-icons/fi'
 
@@ -55,14 +55,6 @@ const InputField = ({
           )}
           {error && <span className="text-red-500">{error.message}</span>}
         </div>
-        //   <InputField
-        //     label="Usuário"
-        //     id="userNick"
-        //     placeholder="Digite seu ID de usuário"
-        //     error={error}
-        //     value={field.value}
-        //     onChange={field.onChange}
-        //   />
       )}
     />
   )
