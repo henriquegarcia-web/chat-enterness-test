@@ -13,11 +13,18 @@ import {
 } from '@/components/ui/card'
 import { useToast } from '@/components/ui/use-toast'
 
+import * as Yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 
 import { handleSignin } from '@/api'
 
 import { ISigninForm } from '@/@types/api'
+
+const signinSchema = Yup.object().shape({
+  userNick: Yup.string().required(),
+  userPassword: Yup.string().required()
+})
 
 const ChatISigninPage = () => {
   const navigate = useNavigate()
@@ -26,7 +33,9 @@ const ChatISigninPage = () => {
   const [signinIsLoading, setSigninIsLoading] = useState(false)
 
   const { control, handleSubmit, reset, formState } = useForm<ISigninForm>({
-    defaultValues: { userNick: '', userPassword: '' }
+    defaultValues: { userNick: '', userPassword: '' },
+    mode: 'onBlur',
+    resolver: yupResolver(signinSchema)
   })
 
   const { isValid } = formState
@@ -35,29 +44,24 @@ const ChatISigninPage = () => {
     setSigninIsLoading(true)
 
     try {
-      const response = await handleSignin({
-        userNick: data.userNick,
-        userPassword: data.userPassword
-      })
-      const signinResponse = response.successful
+      const response = await handleSignin(data)
 
-      setSigninIsLoading(false)
-
-      if (signinResponse) {
-        reset()
+      if (response.success) {
         // navigate('/chat')
-        toast({
-          title: 'Sucesso',
-          description: response.msg
-        })
-      } else {
-        toast({
-          title: 'Falha',
-          description: response.msg
-        })
+        reset()
       }
+
+      toast({
+        title: response.success ? 'Sucesso' : 'Falha',
+        description: response.msg
+      })
     } catch (error) {
-      console.error(error)
+      toast({
+        title: 'Erro',
+        description:
+          'Erro ao fazer login, por favor, tente novamente mais tarde.'
+      })
+    } finally {
       setSigninIsLoading(false)
     }
   }

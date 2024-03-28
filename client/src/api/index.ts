@@ -1,5 +1,10 @@
 import axios from 'axios'
 
+import {
+  throwSignupError,
+  throwSigninError
+} from '@/utils/functions/formatErrors'
+
 import { ISignupForm, ISigninForm } from '@/@types/api'
 
 const api = axios.create({
@@ -11,20 +16,27 @@ const handleSignup = async ({
   userNick,
   userPassword
 }: ISignupForm) => {
-  const response = await api.post('/signup', {
-    userName: userName,
-    userNick: userNick,
-    userPassword: userPassword
-  })
-  return response.data
+  try {
+    const response = await api.post('/signup', {
+      userName,
+      userNick,
+      userPassword
+    })
+    return response.data
+  } catch (error: any) {
+    const errorMessagem = throwSignupError(error.response.status)
+    throw new Error(errorMessagem)
+  }
 }
 
 const handleSignin = async ({ userNick, userPassword }: ISigninForm) => {
-  const response = await api.post('/signin', {
-    userNick: userNick,
-    userPassword: userPassword
-  })
-  return response.data
+  try {
+    const response = await api.post('/signin', { userNick, userPassword })
+    return response.data
+  } catch (error: any) {
+    const errorMessagem = throwSigninError(error.response.status)
+    throw new Error(errorMessagem)
+  }
 }
 
 export { handleSignup, handleSignin }

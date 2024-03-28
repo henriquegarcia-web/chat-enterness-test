@@ -12,12 +12,29 @@ import {
 } from '@/components/ui/card'
 import { useToast } from '@/components/ui/use-toast'
 
+import * as Yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 
 import { handleSignup } from '@/api'
 
 import { ISignupForm } from '@/@types/api'
 import { InputField } from '@/components'
+
+const signupSchema = Yup.object().shape({
+  userName: Yup.string()
+    .required()
+    .max(30, 'O nome não pode ter mais de 30 dígitos'),
+  userNick: Yup.string()
+    .required()
+    .max(20, 'O usuário não pode ter mais de 20 dígitos'),
+  userPassword: Yup.string()
+    .required()
+    .max(20, 'A senha não pode ter mais de 20 dígitos'),
+  userPasswordConfirmation: Yup.string()
+    .required()
+    .oneOf([Yup.ref('userPassword')], 'As senhas precisam ser iguais')
+})
 
 const ChatISignupPage = () => {
   const navigate = useNavigate()
@@ -26,39 +43,43 @@ const ChatISignupPage = () => {
   const [signupIsLoading, setSignupIsLoading] = useState(false)
 
   const { control, handleSubmit, reset, formState } = useForm<ISignupForm>({
-    defaultValues: { userName: '', userNick: '', userPassword: '' }
+    defaultValues: {
+      userName: '',
+      userNick: '',
+      userPassword: '',
+      userPasswordConfirmation: ''
+    },
+    mode: 'onChange',
+    resolver: yupResolver(signupSchema)
   })
 
-  const { isValid } = formState
+  const { isValid, errors } = formState
+
+  console.log(errors)
 
   const handleSignupForm = async (data: ISignupForm) => {
     setSignupIsLoading(true)
 
-    const response = await handleSignup({
-      userName: data.userName,
-      userNick: data.userNick,
-      userPassword: data.userPassword
-    })
+    try {
+      const response = await handleSignup(data)
 
-    const signupResponse = response.successful
+      if (response.success) {
+        // navigate('/chat')
+        reset()
+      }
 
-    setSignupIsLoading(false)
-
-    if (signupResponse) {
-      reset()
-      // navigate('/chat')
       toast({
-        title: 'Sucesso',
+        title: response.success ? 'Sucesso' : 'Falha',
         description: response.msg
       })
-    } else {
+    } catch (error: any) {
       toast({
         title: 'Falha',
-        description: response.msg
+        description: error.message
       })
+    } finally {
+      setSignupIsLoading(false)
     }
-
-    setSignupIsLoading(false)
   }
 
   return (
@@ -89,6 +110,13 @@ const ChatISignupPage = () => {
                 label="Senha"
                 id="userPassword"
                 placeholder="Digite sua senha"
+                control={control}
+                typePassword
+              />
+              <InputField
+                label="Confirmar senha"
+                id="userPasswordConfirmation"
+                placeholder="Digite novamente sua senha"
                 control={control}
                 typePassword
               />

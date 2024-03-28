@@ -35,9 +35,6 @@ const InputField = ({
     <Controller
       name={id}
       control={control}
-      rules={{
-        required: 'Este campo é obrigatório'
-      }}
       render={({ field, fieldState: { error } }) => (
         <div className="relative flex flex-col space-y-2.5 content-center">
           {!!label && label !== '' && <Label htmlFor={id}>{label}</Label>}
@@ -53,7 +50,9 @@ const InputField = ({
               {passwordIsVisible ? <FiEyeOff /> : <FiEye />}
             </span>
           )}
-          {error && <span className="text-red-500">{error.message}</span>}
+          {error && (
+            <span className="text-xs text-red-500">{error.message}</span>
+          )}
         </div>
       )}
     />

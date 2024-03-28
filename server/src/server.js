@@ -78,64 +78,68 @@ io.on('connection', (socket) => {
 app.post('/signup', async (req, res) => {
   const { userName, userNick, userPassword } = req.body
 
-  db.query(
-    'SELECT * FROM users WHERE user_nick = ?',
-    [userNick],
-    (err, result) => {
-      if (err) {
-        res.send(err)
-      }
-      if (result.length == 0) {
-        bcrypt.hash(userPassword, saltRounds, (err, hash) => {
-          db.query(
-            'INSERT INTO users (user_name, user_nick, user_password) VALUE (?,?,?)',
-            [userName, userNick, hash],
-            (error, response) => {
-              if (err) {
-                res.send(err)
-              }
+  try {
+    db.query(
+      'SELECT * FROM users WHERE user_nick = ?',
+      [userNick],
+      (err, result) => {
+        if (err) {
+          res.send(err)
+        }
+        if (result.length == 0) {
+          bcrypt.hash(userPassword, saltRounds, (err, hash) => {
+            db.query(
+              'INSERT INTO users (user_name, user_nick, user_password) VALUE (?,?,?)',
+              [userName, userNick, hash],
+              (error, response) => {
+                if (err) {
+                  res.send(err)
+                }
 
-              res.send({ msg: 'Usuário cadastrado com sucesso' })
-            }
-          )
-        })
-      } else {
-        res.send({ msg: 'Usuário já cadastrado' })
+                res.status(200).send({
+                  success: true,
+                  msg: 'Usuário cadastrado com sucesso'
+                })
+              }
+            )
+          })
+        } else {
+          res.status(400).send({ error: 'Usuário já cadastrado' })
+        }
       }
-    }
-  )
+    )
+  } catch (err) {
+    res.status(500).send({ error: 'Erro interno no servidor' })
+  }
 })
 
 app.post('/signin', async (req, res) => {
   const { userNick, userPassword } = req.body
 
-  db.query(
-    'SELECT * FROM users WHERE user_nick = ?',
-    [userNick],
-    (err, result) => {
-      if (err) {
-        res.send(err)
-      }
-      if (result.length > 0) {
-        bcrypt.compare(
-          userPassword,
-          result[0].user_password,
-          (error, response) => {
-            if (error) {
-              res.send(error)
-            }
-            if (response) {
-              res.send({ msg: 'Usuário logado' })
-            } else {
-              res.send({ msg: 'Senha incorreta' })
-            }
-          }
-        )
-      } else {
-        res.send({ msg: 'Usuário não registrado!' })
-      }
+  try {
+    const user = await db.query('SELECT * FROM users WHERE user_nick = ?', [
+      userNick
+    ])
+
+    if (user.length === 0) {
+      res.status(401).send({ error: 'Usuário não registrado' })
+      return
     }
-  )
+
+    bcrypt.compare(userPassword, user[0].user_password, (error, response) => {
+      if (error) {
+        res.status(500).send({ error: 'Erro interno no servidor' })
+        return
+      }
+      if (response) {
+        res.status(200).send({ success: true, msg: 'Usuário logado' })
+      } else {
+        res.status(404).send({ error: 'Senha incorreta' })
+      }
+    })
+  } catch (err) {
+    res.status(500).send({ error: 'Erro interno no servidor' })
+  }
 })
 
 app.get('/rooms', (req, res) => {
