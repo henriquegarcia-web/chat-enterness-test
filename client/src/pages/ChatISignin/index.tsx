@@ -65,40 +65,18 @@ const ChatISigninPage = () => {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-4">
-              <Controller
-                name="userNick"
+              <InputField
+                label="Usuário"
+                id="userNick"
+                placeholder="Digite seu ID de usuário"
                 control={control}
-                rules={{
-                  required: 'Este campo é obrigatório'
-                }}
-                render={({ field, fieldState: { error } }) => (
-                  <InputField
-                    label="Usuário"
-                    id="userNick"
-                    placeholder="Digite seu ID de usuário"
-                    error={error}
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
-                )}
               />
-              <Controller
-                name="userPassword"
+              <InputField
+                label="Senha"
+                id="userPassword"
+                placeholder="Digite sua senha"
                 control={control}
-                rules={{
-                  required: 'Este campo é obrigatório'
-                }}
-                render={({ field, fieldState: { error } }) => (
-                  <InputField
-                    label="Senha"
-                    id="userPassword"
-                    placeholder="Digite sua senha"
-                    error={error}
-                    value={field.value}
-                    onChange={field.onChange}
-                    typePassword
-                  />
-                )}
+                typePassword
               />
             </div>
           </CardContent>
