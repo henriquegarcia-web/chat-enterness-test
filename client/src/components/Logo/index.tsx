@@ -10,15 +10,13 @@ interface ILogo {
 const Logo = ({ size, iconSize }: ILogo) => {
   const logoSizeClasses = size
     ? `text-${size} font-light`
-    : 'text-3xl font-light'
-  const iconSizeClasses = iconSize ? `text-${iconSize}` : 'text-4xl'
-
-  console.log(size)
+    : 'text-4xl font-light'
+  const iconSizeClasses = iconSize ? `text-${iconSize}` : 'text-5xl'
 
   return (
-    <h1 className={`flex items-center gap-1 ${logoSizeClasses}`}>
+    <h1 className={`flex items-center gap-2 ${logoSizeClasses}`}>
       Realtime
-      <PiChatsCircleLight className={`mb-1 ${iconSizeClasses}`} />
+      <PiChatsCircleLight className={iconSizeClasses} />
       <b className="font-medium">Chat</b>
     </h1>
   )

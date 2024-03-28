@@ -1,7 +1,5 @@
-import * as S from './styles'
-
 const NotFound = () => {
-  return <S.NotFound>NotFound</S.NotFound>
+  return <div className="window">NotFound</div>
 }
 
 export default NotFound
