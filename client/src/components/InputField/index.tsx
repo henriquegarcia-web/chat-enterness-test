@@ -36,20 +36,22 @@ const InputField = ({
       name={id}
       control={control}
       render={({ field, fieldState: { error } }) => (
-        <div className="relative flex flex-col space-y-2.5 content-center">
+        <div className="flex flex-col space-y-2.5">
           {!!label && label !== '' && <Label htmlFor={id}>{label}</Label>}
-          <Input
-            id={id}
-            placeholder={placeholder}
-            value={field.value}
-            onChange={field.onChange}
-            type={inputType}
-          />
-          {typePassword && (
-            <span className="password-icon" onClick={tooglePassword}>
-              {passwordIsVisible ? <FiEyeOff /> : <FiEye />}
-            </span>
-          )}
+          <div className="relative flex items-center">
+            <Input
+              id={id}
+              placeholder={placeholder}
+              value={field.value}
+              onChange={field.onChange}
+              type={inputType}
+            />
+            {typePassword && (
+              <span className="password-icon" onClick={tooglePassword}>
+                {passwordIsVisible ? <FiEyeOff /> : <FiEye />}
+              </span>
+            )}
+          </div>
           {error && (
             <span className="text-xs text-red-500">{error.message}</span>
           )}
