@@ -1,0 +1,28 @@
+version: "3"
+services:
+  client:
+    build: ./client
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client/src:/app/src
+    depends_on:
+      - server
+  server:
+    build: ./server
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./server/src:/app/src
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=my-secret-pw
+      - DB_NAME=mydatabase
+  db:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=8520
+      - MYSQL_DATABASE=mydatabase
