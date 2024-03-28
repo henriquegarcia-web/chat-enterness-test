@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
-import { ChatLanding, ChatInput, Chat, NotFound } from './pages'
+import { ChatLandingPage, ChatInputPage, ChatPage, NotFoundPage } from './pages'
 
 import { useAuth } from './contexts/AuthContext'
 
@@ -12,7 +12,7 @@ const AppRoutes = () => {
       <Routes>
         {/* =============================================================== */}
 
-        <Route path="/" element={<ChatLanding />} />
+        <Route path="/" element={<ChatLandingPage />} />
         <Route path="/*" element={<Navigate to="/" />} />
 
         {/* =============================================================== */}
@@ -21,7 +21,7 @@ const AppRoutes = () => {
           path="/entrar"
           element={
             <PublicRoute isAuthenticated={isUserLogged}>
-              <ChatInput />
+              <ChatInputPage />
             </PublicRoute>
           }
         />
@@ -30,7 +30,7 @@ const AppRoutes = () => {
           path="/chat"
           element={
             <PrivateAdminRoute isAuthenticated={isUserLogged}>
-              <Chat />
+              <ChatPage />
             </PrivateAdminRoute>
           }
         />

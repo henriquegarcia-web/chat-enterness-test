@@ -5,11 +5,11 @@ import * as S from './styles'
 import { Logo } from '@/components'
 import { Button } from '@/components/ui/button'
 
-const ChatLanding = () => {
+const ChatLandingPage = () => {
   const navigate = useNavigate()
 
   return (
-    <S.ChatLanding>
+    <S.ChatLandingPage>
       <S.ChatLandingContainer>
         <Logo />
         <S.ChatLandingContainerLegend>
@@ -18,8 +18,8 @@ const ChatLanding = () => {
         </S.ChatLandingContainerLegend>
         <Button onClick={() => navigate('/entrar')}>Entrar</Button>
       </S.ChatLandingContainer>
-    </S.ChatLanding>
+    </S.ChatLandingPage>
   )
 }
 
-export default ChatLanding
+export default ChatLandingPage

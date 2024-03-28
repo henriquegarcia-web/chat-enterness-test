@@ -1,7 +1,7 @@
 import * as S from './styles'
 
-const Chat = () => {
-  return <S.Chat>Chat</S.Chat>
+const ChatPage = () => {
+  return <S.ChatPage>ChatPage</S.ChatPage>
 }
 
-export default Chat
+export default ChatPage

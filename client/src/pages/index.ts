@@ -1,6 +1,6 @@
-import ChatLanding from './ChatLanding'
-import ChatInput from './ChatInput'
-import Chat from './Chat'
-import NotFound from './NotFound'
+import ChatLandingPage from './ChatLanding'
+import ChatInputPage from './ChatInput'
+import ChatPage from './Chat'
+import NotFoundPage from './NotFound'
 
-export { ChatLanding, ChatInput, Chat, NotFound }
+export { ChatLandingPage, ChatInputPage, ChatPage, NotFoundPage }

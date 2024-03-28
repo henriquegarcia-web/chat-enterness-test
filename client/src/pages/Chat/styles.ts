@@ -1,5 +1,5 @@
 import styled from 'styled-components'
 
-export const Chat = styled.main`
+export const ChatPage = styled.main`
   display: flex;
 `

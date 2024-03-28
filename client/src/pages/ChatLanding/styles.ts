@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { Subtitle, Window } from '@/utils/styles/globals'
 
-export const ChatLanding = styled(Window)`
+export const ChatLandingPage = styled(Window)`
   justify-content: center;
   align-items: center;
 `
