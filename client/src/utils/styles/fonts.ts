@@ -10,7 +10,8 @@ const Fonts = {
   xxxl: '1.5rem',
   h3: '1.625rem',
   h2: '2.125rem',
-  h1: '2.875rem'
+  h1: '2.875rem',
+  logoDefault: '2.4rem'
 }
 
 export default Fonts

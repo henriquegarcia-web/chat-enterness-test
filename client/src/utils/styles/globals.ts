@@ -22,8 +22,8 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
     border: none;
     outline: none;
-    font-family: "Roboto", sans-serif;
-    /* font-family: "Inter", sans-serif; */
+    /* font-family: "Roboto", sans-serif; */
+    font-family: "Inter", sans-serif;
     text-decoration: none;
     user-select: none;
 
