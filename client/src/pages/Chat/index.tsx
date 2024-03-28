@@ -1,7 +1,5 @@
-import * as S from './styles'
-
 const ChatPage = () => {
-  return <S.ChatPage>ChatPage</S.ChatPage>
+  return <div className="">ChatPage</div>
 }
 
 export default ChatPage

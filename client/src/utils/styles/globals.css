@@ -74,3 +74,34 @@
     @apply bg-background text-foreground;
   }
 }
+
+:root {
+  font-size: 14px;
+
+  @media screen and (min-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  /* font-family: "Roboto", sans-serif; */
+  font-family: 'Inter', sans-serif;
+  text-decoration: none;
+  user-select: none;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  z-index: 1000;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ff7a00;
+}

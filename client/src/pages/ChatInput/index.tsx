@@ -1,7 +1,5 @@
 import { useNavigate } from 'react-router-dom'
 
-import * as S from './styles'
-
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -18,7 +16,7 @@ const ChatInputPage = () => {
   const navigate = useNavigate()
 
   return (
-    <S.ChatInputPage>
+    <div className="window">
       <Card className="w-[350px] mx-8">
         <CardHeader>
           <CardTitle>Entrar no chat</CardTitle>
@@ -49,7 +47,7 @@ const ChatInputPage = () => {
           <Button>Entrar</Button>
         </CardFooter>
       </Card>
-    </S.ChatInputPage>
+    </div>
   )
 }
 
