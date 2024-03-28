@@ -29,6 +29,12 @@ const InputField = ({
 
   const tooglePassword = () => setPasswordIsVisible(!passwordIsVisible)
 
+  const inputType = typePassword
+    ? passwordIsVisible
+      ? 'text'
+      : 'password'
+    : 'text'
+
   return (
     <div className="relative flex flex-col space-y-2.5 content-center">
       {!!label && label !== '' && <Label htmlFor={id}>{label}</Label>}
@@ -37,7 +43,7 @@ const InputField = ({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        type={passwordIsVisible ? 'text' : 'password'}
+        type={inputType}
       />
       {typePassword && (
         <span className="password-icon" onClick={tooglePassword}>
