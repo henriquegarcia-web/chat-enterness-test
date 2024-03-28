@@ -75,22 +75,22 @@ io.on('connection', (socket) => {
 })
 
 app.post('/signup', async (req, res) => {
-  const { nome, senha } = req.body
+  const { userName, userNick, userPassword } = req.body
 
   try {
-    const verificaUsuarioQuery = 'SELECT * FROM users WHERE nome = ?'
-    const results = await db.query(verificaUsuarioQuery, [nome])
+    const verificaUsuarioQuery = 'SELECT * FROM users WHERE user_name = ?'
+    const results = await db.query(verificaUsuarioQuery, [userName])
 
     if (results.length > 0) {
       res.status(409).json({ error: 'Nome de usuário já existe' })
       return
     }
 
-    const hashedSenha = await bcrypt.hash(senha, 10)
+    const hashedPassword = await bcrypt.hash(userPassword, 10)
 
-    const cadastrarUsuarioQuery =
-      'INSERT INTO users (nome, senha) VALUES (?, ?)'
-    await db.query(cadastrarUsuarioQuery, [nome, hashedSenha])
+    const signupUserQuery =
+      'INSERT INTO users (user_name, user_nick, user_password) VALUES (?, ?)'
+    await db.query(signupUserQuery, [userName, userNick, hashedPassword])
 
     res.status(201).json({ message: 'Usuário cadastrado com sucesso' })
   } catch (error) {
@@ -100,11 +100,11 @@ app.post('/signup', async (req, res) => {
 })
 
 app.post('/signin', async (req, res) => {
-  const { nome, senha } = req.body
+  const { userName, userPassword } = req.body
 
   try {
-    const buscaUsuarioQuery = 'SELECT * FROM users WHERE nome = ?'
-    const results = await db.query(buscaUsuarioQuery, [nome])
+    const buscaUsuarioQuery = 'SELECT * FROM users WHERE user_name = ?'
+    const results = await db.query(buscaUsuarioQuery, [userName])
 
     if (results.length === 0) {
       res.status(401).json({ error: 'Nome de usuário ou senha incorretos' })
@@ -113,7 +113,10 @@ app.post('/signin', async (req, res) => {
 
     const usuario = results[0]
 
-    const senhaCorrespondente = await bcrypt.compare(senha, usuario.senha)
+    const senhaCorrespondente = await bcrypt.compare(
+      userPassword,
+      usuario.user_password
+    )
 
     if (!senhaCorrespondente) {
       res.status(401).json({ error: 'Nome de usuário ou senha incorretos' })
@@ -122,7 +125,7 @@ app.post('/signin', async (req, res) => {
 
     res
       .status(200)
-      .json({ message: 'Login bem-sucedido', userID: usuario.userID })
+      .json({ message: 'Login bem-sucedido', user_id: usuario.user_id })
   } catch (error) {
     console.log('Erro ao verificar credenciais:', error)
     res.status(500).json({ error: 'Erro ao verificar credenciais' })

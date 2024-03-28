@@ -1,6 +1,13 @@
 import ChatLandingPage from './ChatLanding'
-import ChatInputPage from './ChatInput'
+import ChatISigninPage from './ChatISignin'
+import ChatISignupPage from './ChatISignup'
 import ChatPage from './Chat'
 import NotFoundPage from './NotFound'
 
-export { ChatLandingPage, ChatInputPage, ChatPage, NotFoundPage }
+export {
+  ChatLandingPage,
+  ChatISigninPage,
+  ChatISignupPage,
+  ChatPage,
+  NotFoundPage
+}
