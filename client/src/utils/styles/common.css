@@ -5,3 +5,14 @@
   justify-content: center;
   align-items: center;
 }
+
+.password-icon {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  cursor: pointer;
+}
+
+.password-icon svg {
+  font-size: 15px;
+}

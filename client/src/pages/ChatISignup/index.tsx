@@ -55,73 +55,76 @@ const ChatISignupPage = () => {
   return (
     <div className="window">
       <Card className="w-[350px] mx-8">
-        <CardHeader>
-          <CardTitle>Criar conta</CardTitle>
-          <CardDescription>
-            Preencha os dados abaixo para cadastrar
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form
-            className="flex flex-col gap-4"
-            onSubmit={handleSubmit(handleSignupForm)}
-          >
-            <Controller
-              name="userName"
-              control={control}
-              rules={{
-                required: 'Este campo é obrigatório'
-              }}
-              render={({ field, fieldState: { error } }) => (
-                <InputField
-                  label="Nome"
-                  id="userName"
-                  placeholder="Digite seu nome completo"
-                  error={error}
-                  {...field}
-                />
-              )}
-            />
-            <Controller
-              name="userNick"
-              control={control}
-              rules={{
-                required: 'Este campo é obrigatório'
-              }}
-              render={({ field, fieldState: { error } }) => (
-                <InputField
-                  label="Usuário"
-                  id="userNick"
-                  placeholder="Digite seu ID de usuário"
-                  error={error}
-                  {...field}
-                />
-              )}
-            />
-            <Controller
-              name="userPassword"
-              control={control}
-              rules={{
-                required: 'Este campo é obrigatório'
-              }}
-              render={({ field, fieldState: { error } }) => (
-                <InputField
-                  label="Senha"
-                  id="userPassword"
-                  placeholder="Digite sua senha"
-                  error={error}
-                  {...field}
-                />
-              )}
-            />
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button variant="outline" onClick={() => navigate('/')}>
-            Voltar
-          </Button>
-          <Button>Entrar</Button>
-        </CardFooter>
+        <form onSubmit={handleSubmit(handleSignupForm)}>
+          <CardHeader>
+            <CardTitle>Criar conta</CardTitle>
+            <CardDescription>
+              Preencha os dados abaixo para cadastrar
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-4">
+              <Controller
+                name="userName"
+                control={control}
+                rules={{
+                  required: 'Este campo é obrigatório'
+                }}
+                render={({ field, fieldState: { error } }) => (
+                  <InputField
+                    label="Nome"
+                    id="userName"
+                    placeholder="Digite seu nome completo"
+                    error={error}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <Controller
+                name="userNick"
+                control={control}
+                rules={{
+                  required: 'Este campo é obrigatório'
+                }}
+                render={({ field, fieldState: { error } }) => (
+                  <InputField
+                    label="Usuário"
+                    id="userNick"
+                    placeholder="Digite seu ID de usuário"
+                    error={error}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <Controller
+                name="userPassword"
+                control={control}
+                rules={{
+                  required: 'Este campo é obrigatório'
+                }}
+                render={({ field, fieldState: { error } }) => (
+                  <InputField
+                    label="Senha"
+                    id="userPassword"
+                    placeholder="Digite sua senha"
+                    error={error}
+                    value={field.value}
+                    onChange={field.onChange}
+                    typePassword
+                  />
+                )}
+              />
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button variant="outline" onClick={() => navigate('/entrar')}>
+              Já tenho conta
+            </Button>
+            <Button type="submit">Cadastrar</Button>
+          </CardFooter>
+        </form>
       </Card>
     </div>
   )

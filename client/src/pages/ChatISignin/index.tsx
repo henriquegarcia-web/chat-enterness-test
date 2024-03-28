@@ -30,81 +30,85 @@ const ChatISigninPage = () => {
   const handleSigninForm = async (data: ISigninForm) => {
     setSigninIsLoading(true)
 
-    try {
-      const response = await handleSignin({
-        userNick: data.userNick,
-        userPassword: data.userPassword
-      })
-      const signinResponse = response.data
+    console.log(data)
 
-      setSigninIsLoading(false)
+    // try {
+    //   const response = await handleSignin({
+    //     userNick: data.userNick,
+    //     userPassword: data.userPassword
+    //   })
+    //   const signinResponse = response.data
 
-      if (signinResponse) {
-        reset()
-        navigate('/chat')
-      } else {
-        throw new Error('The search term does not exist.')
-      }
-    } catch (error) {
-      console.error(error)
-      setSigninIsLoading(false)
-    }
+    //   setSigninIsLoading(false)
+
+    //   if (signinResponse) {
+    //     reset()
+    //     navigate('/chat')
+    //   } else {
+    //     throw new Error('The search term does not exist.')
+    //   }
+    // } catch (error) {
+    //   console.error(error)
+    //   setSigninIsLoading(false)
+    // }
   }
 
   return (
     <div className="window">
       <Card className="w-[350px] mx-8">
-        <CardHeader>
-          <CardTitle>Entrar</CardTitle>
-          <CardDescription>
-            Digite seu usuário e senha para entrar
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form
-            className="flex flex-col gap-4"
-            onSubmit={handleSubmit(handleSigninForm)}
-          >
-            <Controller
-              name="userNick"
-              control={control}
-              rules={{
-                required: 'Este campo é obrigatório'
-              }}
-              render={({ field, fieldState: { error } }) => (
-                <InputField
-                  label="Usuário"
-                  id="userNick"
-                  placeholder="Digite seu ID de usuário"
-                  error={error}
-                  {...field}
-                />
-              )}
-            />
-            <Controller
-              name="userPassword"
-              control={control}
-              rules={{
-                required: 'Este campo é obrigatório'
-              }}
-              render={({ field, fieldState: { error } }) => (
-                <InputField
-                  label="Senha"
-                  id="userPassword"
-                  placeholder="Digite sua senha"
-                  error={error}
-                  {...field}
-                />
-              )}
-            />
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button variant="outline" onClick={() => navigate('/')}>
-            Voltar
-          </Button>
-          <Button>Entrar</Button>
-        </CardFooter>
+        <form onSubmit={handleSubmit(handleSigninForm)}>
+          <CardHeader>
+            <CardTitle>Entrar</CardTitle>
+            <CardDescription>
+              Digite seu usuário e senha para entrar
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-4">
+              <Controller
+                name="userNick"
+                control={control}
+                rules={{
+                  required: 'Este campo é obrigatório'
+                }}
+                render={({ field, fieldState: { error } }) => (
+                  <InputField
+                    label="Usuário"
+                    id="userNick"
+                    placeholder="Digite seu ID de usuário"
+                    error={error}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <Controller
+                name="userPassword"
+                control={control}
+                rules={{
+                  required: 'Este campo é obrigatório'
+                }}
+                render={({ field, fieldState: { error } }) => (
+                  <InputField
+                    label="Senha"
+                    id="userPassword"
+                    placeholder="Digite sua senha"
+                    error={error}
+                    value={field.value}
+                    onChange={field.onChange}
+                    typePassword
+                  />
+                )}
+              />
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button variant="outline" onClick={() => navigate('/cadastrar')}>
+              Não tenho cadastro
+            </Button>
+            <Button type="submit">Entrar</Button>
+          </CardFooter>
+        </form>
       </Card>
     </div>
   )
