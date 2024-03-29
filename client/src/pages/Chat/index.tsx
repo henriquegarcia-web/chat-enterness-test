@@ -2,6 +2,7 @@ import { Menu, MessagesSquare } from 'lucide-react'
 
 import {
   ChatInputField,
+  ChatWrapper,
   CreateRoomDialog,
   Logo,
   NotSelectedChat,
@@ -12,9 +13,11 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
 import { useChat } from '@/contexts/ChatContext'
+import { useAuth } from '@/contexts/AuthContext'
 
 const ChatPage = () => {
-  const { handleEntryRoom, currentRoom, rooms } = useChat()
+  const { userInfos } = useAuth()
+  const { handleEntryRoom, currentRoom, rooms, messages } = useChat()
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -104,9 +107,15 @@ const ChatPage = () => {
           <div className="flex items-center">
             <h1 className="text-lg font-semibold md:text-2xl">Inventory</h1>
           </div>
-          <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
-            {currentRoom ? <></> : <NotSelectedChat />}
-          </div>
+          {currentRoom ? (
+            <div className="flex flex-1 items-end p-4 rounded-lg border border-dashed shadow-sm">
+              <ChatWrapper messages={messages} activeUser={userInfos?.userId} />
+            </div>
+          ) : (
+            <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
+              <NotSelectedChat />
+            </div>
+          )}
           <ChatInputField />
         </main>
       </div>

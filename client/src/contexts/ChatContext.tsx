@@ -14,12 +14,14 @@ import { useAuth } from './AuthContext'
 
 import { createRoom, entryRoom, sendMessage, useSocket } from '@/lib/socket'
 
-import { ChatContextData, Message, Room } from '@/@types/contexts'
+import { IChatContextData, IMessage, Room } from '@/@types/contexts'
 import { api } from '@/api'
 
 // ===================================================================
 
-export const ChatContext = createContext<ChatContextData>({} as ChatContextData)
+export const ChatContext = createContext<IChatContextData>(
+  {} as IChatContextData
+)
 
 const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   // =================================================================
@@ -27,7 +29,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const { userId } = useAuth()
 
   const [rooms, setRooms] = useState<Room[]>([])
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<IMessage[]>([])
   const [currentRoom, setCurrentRoom] = useState<number | null>(null)
 
   // =================================================================
@@ -187,7 +189,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-function useChat(): ChatContextData {
+function useChat(): IChatContextData {
   const context = useContext(ChatContext)
 
   if (!context) throw new Error('useChat must be used within a UserProvider')

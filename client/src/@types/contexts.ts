@@ -2,10 +2,11 @@
 
 export interface IUserInfos {
   userId: string
+  userNick: string
   userName: string
 }
 
-export interface AuthContextData {
+export interface IAuthContextData {
   userId: string | null
   userInfos: IUserInfos | null
   isUserLogged: boolean
@@ -19,7 +20,7 @@ export interface Room {
   roomName: string
 }
 
-export interface Message {
+export interface IMessage {
   messageId: number
   messageContent: string
   messageSender: number
@@ -27,10 +28,10 @@ export interface Message {
   messageTimestamp: string
 }
 
-export interface ChatContextData {
+export interface IChatContextData {
   userId: string | null
   rooms: Room[]
-  messages: Message[]
+  messages: IMessage[]
   currentRoom: number | null
   handleCreateRoom: ({ roomName }: { roomName: string }) => Promise<boolean>
   handleEntryRoom: (roomId: number) => Promise<void>

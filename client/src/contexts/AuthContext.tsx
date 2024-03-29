@@ -2,7 +2,6 @@
 
 import React, {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -11,11 +10,13 @@ import React, {
 
 import { api } from '@/api'
 
-import { AuthContextData, IUserInfos } from '@/@types/contexts'
+import { IAuthContextData, IUserInfos } from '@/@types/contexts'
 
 // ===================================================================
 
-export const AuthContext = createContext<AuthContextData>({} as AuthContextData)
+export const AuthContext = createContext<IAuthContextData>(
+  {} as IAuthContextData
+)
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // =================================================================
@@ -39,7 +40,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       })
       .then((response) => {
-        setUserId(response.data.userId || null)
+        setUserId(response.data.userNick || null)
         setUserInfos(response.data || null)
       })
       .catch(() => {
@@ -72,7 +73,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-function useAuth(): AuthContextData {
+function useAuth(): IAuthContextData {
   const context = useContext(AuthContext)
 
   if (!context) throw new Error('useAuth must be used within a UserProvider')

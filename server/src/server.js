@@ -169,7 +169,7 @@ app.post('/signup', async (req, res) => {
     await User.create({ userName, userNick, userPassword: hashedPassword })
 
     const token = jwt.sign(
-      { userName: user.userName, userNick },
+      { userId: user.userId, userName: user.userName, userNick },
       process.env.SECRET_TOKEN_KEY,
       {
         expiresIn: '1h'
@@ -203,7 +203,7 @@ app.post('/signin', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userName: user.userName, userNick },
+      { userId: user.userId, userName: user.userName, userNick },
       process.env.SECRET_TOKEN_KEY,
       {
         expiresIn: '1h'
@@ -219,7 +219,11 @@ app.post('/signin', async (req, res) => {
 
 // Rota de validação do token
 app.get('/verify-token', authenticateToken, (req, res) => {
-  res.json({ userName: req.user.userName, userId: req.user.userNick })
+  res.json({
+    userId: req.user.userId,
+    userName: req.user.userName,
+    userNick: req.user.userNick
+  })
 })
 
 // ========================================== ROTAS DO CHAT
@@ -261,18 +265,13 @@ io.on('connection', (socket) => {
       const user = await User.findOne({ where: { userNick: userId } })
 
       const timestamp = moment().toISOString()
-      await Message.create({
+      const messageModel = await Message.create({
         messageContent: message,
         messageSender: user.userId,
         messageRoom: roomId,
         messageTimestamp: timestamp
       })
-      io.to(`room-${roomId}`).emit('newMesssage', {
-        messageContent: message,
-        messageSender: user.userId,
-        messageRoom: roomId,
-        messageTimestamp: timestamp
-      })
+      io.to(`room-${roomId}`).emit('newMesssage', messageModel)
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error)
     }
