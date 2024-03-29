@@ -1,3 +1,6 @@
+// Carrega variáveis de ambiente
+require('dotenv').config()
+
 const express = require('express')
 const http = require('http')
 const socketIo = require('socket.io')
@@ -9,9 +12,6 @@ const { Sequelize, DataTypes } = require('sequelize')
 
 const authenticateToken = require('./authMiddleware')
 const jwt = require('jsonwebtoken')
-
-// Carrega variáveis de ambiente
-require('dotenv').config()
 
 // Inicialização do aplicativo Express
 const app = express()
