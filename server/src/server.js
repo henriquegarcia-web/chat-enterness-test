@@ -151,7 +151,13 @@ Message.belongsTo(User, { foreignKey: 'messageSender' })
 // Middlewares
 app.use(express.json())
 app.use(bodyParser.json())
-app.use(cors())
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    methods: ['GET', 'POST'],
+    credentials: true
+  })
+)
 
 // Observador para criação de sala
 Room.afterCreate(async (room) => {
