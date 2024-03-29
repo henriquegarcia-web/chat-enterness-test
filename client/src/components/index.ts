@@ -4,6 +4,7 @@ import ChatInputField from './ChatInputField'
 import Dialog from './Dialog'
 import CreateRoomDialog from './CreateRoomDialog'
 import NotSelectedChat from './NotSelectedChat'
+import UserDropdown from './UserDropdown'
 
 export {
   Logo,
@@ -11,5 +12,6 @@ export {
   ChatInputField,
   Dialog,
   CreateRoomDialog,
-  NotSelectedChat
+  NotSelectedChat,
+  UserDropdown
 }
