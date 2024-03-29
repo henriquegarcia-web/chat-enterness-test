@@ -1,5 +1,17 @@
 // ================================================ AUTH CONTEXT
 
+export interface IUserInfos {
+  userId: string
+  userName: string
+}
+
+export interface AuthContextData {
+  userId: string | null
+  userInfos: IUserInfos | null
+  isUserLogged: boolean
+  handleLogout: () => void
+}
+
 // ================================================ CHAT CONTEXT
 
 export interface Room {

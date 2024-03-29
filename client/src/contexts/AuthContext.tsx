@@ -11,11 +11,7 @@ import React, {
 
 import { api } from '@/api'
 
-interface AuthContextData {
-  userId: string | null
-  isUserLogged: boolean
-  handleLogout: () => void
-}
+import { AuthContextData, IUserInfos } from '@/@types/contexts'
 
 // ===================================================================
 
@@ -25,6 +21,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // =================================================================
 
   const [userId, setUserId] = useState<string | null>(null)
+  const [userInfos, setUserInfos] = useState<IUserInfos | null>(null)
 
   const isUserLogged = useMemo(() => {
     return !!userId
@@ -43,6 +40,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .then((response) => {
         setUserId(response.data.userId || null)
+        setUserInfos(response.data || null)
       })
       .catch(() => {
         setUserId(null)
@@ -61,10 +59,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const AuthContextValues = useMemo(() => {
     return {
       userId,
+      userInfos,
       isUserLogged,
       handleLogout
     }
-  }, [userId, isUserLogged])
+  }, [userId, userInfos, isUserLogged])
 
   return (
     <AuthContext.Provider value={AuthContextValues}>

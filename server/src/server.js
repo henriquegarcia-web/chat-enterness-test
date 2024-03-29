@@ -168,9 +168,13 @@ app.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(userPassword, 10)
     await User.create({ userName, userNick, userPassword: hashedPassword })
 
-    const token = jwt.sign({ userNick }, process.env.SECRET_TOKEN_KEY, {
-      expiresIn: '1h'
-    })
+    const token = jwt.sign(
+      { userName: user.userName, userNick },
+      process.env.SECRET_TOKEN_KEY,
+      {
+        expiresIn: '1h'
+      }
+    )
 
     res.status(200).json({
       success: true,
@@ -198,9 +202,13 @@ app.post('/signin', async (req, res) => {
       return res.status(401).json({ error: 'Senha incorreta' })
     }
 
-    const token = jwt.sign({ userNick }, process.env.SECRET_TOKEN_KEY, {
-      expiresIn: '1h'
-    })
+    const token = jwt.sign(
+      { userName: user.userName, userNick },
+      process.env.SECRET_TOKEN_KEY,
+      {
+        expiresIn: '1h'
+      }
+    )
 
     res.status(200).json({ success: true, token: token, msg: 'Usuário logado' })
   } catch (error) {
@@ -211,7 +219,7 @@ app.post('/signin', async (req, res) => {
 
 // Rota de validação do token
 app.get('/verify-token', authenticateToken, (req, res) => {
-  res.json({ userId: req.user.userNick })
+  res.json({ userName: req.user.userName, userId: req.user.userNick })
 })
 
 // ========================================== ROTAS DO CHAT
