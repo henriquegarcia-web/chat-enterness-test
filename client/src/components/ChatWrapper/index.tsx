@@ -1,3 +1,5 @@
+import { timestampToHours } from '@/utils/functions/convertTimestamp'
+
 import { IMessage } from '@/@types/contexts'
 
 interface IChatWrapper {
@@ -6,10 +8,6 @@ interface IChatWrapper {
 }
 
 const ChatWrapper = ({ messages, activeUser }: IChatWrapper) => {
-  const formatTimestamp = (timestamp: string): string => {
-    return new Date(timestamp).toLocaleTimeString()
-  }
-
   const groupMessagesByDay = (
     messages: IMessage[]
   ): { [key: string]: IMessage[] } => {
@@ -52,11 +50,16 @@ const ChatWrapper = ({ messages, activeUser }: IChatWrapper) => {
                     : 'bg-blue-300 self-end'
                 } flex flex-col items-end gap-y-1 rounded-lg p-2 max-w-xs`}
               >
+                {!isFromCurrentUser && (
+                  <p className="text-xs text-gray-500 font-semibold mr-auto">
+                    {message.messageSenderName}
+                  </p>
+                )}
                 <p className="text-sm text-black font-semibold">
                   {message.messageContent}
                 </p>
                 <p className="text-xs text-gray-500 font-semibold">
-                  {formatTimestamp(message.messageTimestamp)}
+                  {timestampToHours(message.messageTimestamp)}
                 </p>
               </div>
             )

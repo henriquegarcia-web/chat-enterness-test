@@ -81,6 +81,10 @@ const Message = sequelize.define('messages', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
+  messageSenderName: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
   messageRoom: {
     type: DataTypes.INTEGER,
     allowNull: false
@@ -272,6 +276,7 @@ io.on('connection', (socket) => {
       const messageModel = await Message.create({
         messageContent: message,
         messageSender: user.userId,
+        messageSenderName: user.userName,
         messageRoom: roomId,
         messageTimestamp: timestamp
       })

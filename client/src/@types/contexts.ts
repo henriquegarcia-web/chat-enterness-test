@@ -24,6 +24,7 @@ export interface IMessage {
   messageId: number
   messageContent: string
   messageSender: number
+  messageSenderName: string
   messageRoom: number
   messageTimestamp: string
 }
