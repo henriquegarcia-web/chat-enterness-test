@@ -16,7 +16,12 @@ require('dotenv').config()
 // Inicialização do aplicativo Express
 const app = express()
 const server = http.createServer(app)
-const io = socketIo(server)
+const io = socketIo(server, {
+  cors: {
+    origin: process.env.CLIENT_URL,
+    methods: ['GET', 'POST']
+  }
+})
 
 // Configuração do banco de dados Sequelize
 const sequelize = new Sequelize(

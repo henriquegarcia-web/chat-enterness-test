@@ -29,7 +29,7 @@
    `DB_PASSWORD=` <br/>
    `DB_NAME=chat_enterness_test` <br/>
    `SERVER_PORT=5000` <br/>
-   `CLIENT_PORT=5173` <br/>
+   `CLIENT_URL=http://localhost:5173` <br/>
    `SECRET_TOKEN_KEY=A1B2C3D4E5F6G7H8I9J0`
 
 3. Inicie o servidor de desenvolvimento:
