@@ -14,6 +14,7 @@ interface IDialog {
   legend: string
   triggerLabel: string
   inputLabel: string
+  inputDisabled?: boolean
   onSubmit?: () => void
   children: React.ReactNode
 }
@@ -23,26 +24,29 @@ const Dialog = ({
   legend,
   triggerLabel,
   inputLabel,
+  inputDisabled = false,
   onSubmit,
   children
 }: IDialog) => {
   return (
     <DialogUI>
-      <form onSubmit={onSubmit && onSubmit}>
-        <DialogTrigger asChild>
-          <Button className="w-full ">{triggerLabel}</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+      <DialogTrigger asChild>
+        <Button className="w-full ">{triggerLabel}</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <form onSubmit={onSubmit && onSubmit}>
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>{legend}</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">{children}</div>
           <DialogFooter>
-            <Button type="submit">{inputLabel}</Button>
+            <Button type="submit" disabled={inputDisabled}>
+              {inputLabel}
+            </Button>
           </DialogFooter>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </DialogUI>
   )
 }

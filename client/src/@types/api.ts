@@ -22,5 +22,5 @@ export interface ICustomErrorAuthForm {
 
 export interface ICreateRoomForm {
   roomName: string
-  roomId: string
+  // roomId: string
 }

@@ -251,7 +251,14 @@ io.on('connection', (socket) => {
   socket.on('createRoom', async (data) => {
     try {
       const { roomName, createdBy } = data
-      const room = await Room.create({ roomName, createdBy })
+      const user = await User.findOne({ where: { userNick: createdBy } })
+
+      if (!user) {
+        console.error('Usuário com userNick', createdBy, 'não encontrado')
+        return
+      }
+
+      const room = await Room.create({ roomName, createdBy: user.userId })
       io.emit('newRoom', room)
     } catch (error) {
       console.error('Erro ao criar sala:', error)

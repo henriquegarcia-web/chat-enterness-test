@@ -14,10 +14,10 @@ import { ICreateRoomForm } from '@/@types/api'
 const createRoomSchema = Yup.object().shape({
   roomName: Yup.string()
     .required()
-    .max(20, 'O nome não pode ter mais de 20 dígitos'),
-  roomId: Yup.string()
-    .required()
-    .max(10, 'O id não pode ter mais de 10 dígitos')
+    .max(20, 'O nome não pode ter mais de 20 dígitos')
+  // roomId: Yup.string()
+  //   .required()
+  //   .max(10, 'O id não pode ter mais de 10 dígitos')
 })
 
 interface ICreateRoomDialog {}
@@ -30,8 +30,8 @@ const CreateRoomDialog = ({}: ICreateRoomDialog) => {
 
   const { control, handleSubmit, reset, formState } = useForm<ICreateRoomForm>({
     defaultValues: {
-      roomName: '',
-      roomId: ''
+      roomName: ''
+      // roomId: ''
     },
     mode: 'onChange',
     resolver: yupResolver(createRoomSchema)
@@ -46,6 +46,8 @@ const CreateRoomDialog = ({}: ICreateRoomDialog) => {
       const response = await handleCreateRoom({
         roomName: data.roomName
       })
+
+      console.log(response)
       // const response = true
 
       // if (response) {
@@ -74,20 +76,21 @@ const CreateRoomDialog = ({}: ICreateRoomDialog) => {
       legend="Preencha os dados abaixo para criar uma sala"
       triggerLabel="Criar sala"
       inputLabel="Criar"
+      inputDisabled={!isValid || createRoomIsLoading}
       onSubmit={handleSubmit(handleCreateRoomForm)}
     >
       <InputField
         label="Nome da sala"
-        id="roomId"
+        id="roomName"
         placeholder="Digite o nome da sala"
         control={control}
       />
-      <InputField
+      {/* <InputField
         label="ID da sala"
         id="roomId"
         placeholder="Digite o ID da sala"
         control={control}
-      />
+      /> */}
     </Dialog>
   )
 }
