@@ -9,10 +9,11 @@ import React, {
   useState
 } from 'react'
 
-import api from '@/api'
+import { api } from '@/api'
 
 interface AuthContextData {
   isUserLogged: boolean
+  handleLogout: () => void
 }
 
 // ===================================================================
@@ -22,20 +23,38 @@ export const AuthContext = createContext<AuthContextData>({} as AuthContextData)
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // =================================================================
 
-  const isUserLogged = useMemo(() => {
-    return false
-  }, [])
+  const [isUserLogged, setIsUserLogged] = useState<boolean>(false)
 
   // =================================================================
 
-  // useEffect(() => {
-  //   console.log('LOGADO ======>', isUserLogged, userId)
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [isUserLogged])
+  const verifyToken = async () => {
+    const userToken = localStorage.getItem('user_token')
+
+    await api
+      .get('/verify-token', {
+        headers: {
+          Authorization: `Bearer ${userToken}`
+        }
+      })
+      .then((response) => {
+        setIsUserLogged(response.status === 200)
+      })
+      .catch(() => {})
+  }
+
+  useEffect(() => {
+    verifyToken()
+  }, [])
+
+  const handleLogout = () => {
+    setIsUserLogged(false)
+    localStorage.removeItem('user_token')
+  }
 
   const AuthContextValues = useMemo(() => {
     return {
-      isUserLogged
+      isUserLogged,
+      handleLogout
     }
   }, [isUserLogged])
 

@@ -53,9 +53,7 @@ const ChatISignupPage = () => {
     resolver: yupResolver(signupSchema)
   })
 
-  const { isValid, errors } = formState
-
-  console.log(errors)
+  const { isValid } = formState
 
   const handleSignupForm = async (data: ISignupForm) => {
     setSignupIsLoading(true)
@@ -64,7 +62,9 @@ const ChatISignupPage = () => {
       const response = await handleSignup(data)
 
       if (response.success) {
-        // navigate('/chat')
+        navigate('/chat')
+        localStorage.setItem('user_token', response.token)
+        window.location.reload()
         reset()
       }
 

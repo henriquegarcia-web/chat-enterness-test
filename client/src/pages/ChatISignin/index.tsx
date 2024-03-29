@@ -47,7 +47,9 @@ const ChatISigninPage = () => {
       const response = await handleSignin(data)
 
       if (response.success) {
-        // navigate('/chat')
+        navigate('/chat')
+        localStorage.setItem('user_token', response.token)
+        window.location.reload()
         reset()
       }
 

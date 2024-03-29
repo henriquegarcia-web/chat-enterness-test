@@ -5,6 +5,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const bcrypt = require('bcrypt')
 const moment = require('moment')
+const jwt = require('jsonwebtoken')
 const { Sequelize, DataTypes } = require('sequelize')
 
 // Carrega variáveis de ambiente
@@ -118,9 +119,15 @@ app.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(userPassword, 10)
     await User.create({ userName, userNick, userPassword: hashedPassword })
 
-    res
-      .status(200)
-      .json({ success: true, msg: 'Usuário cadastrado com sucesso' })
+    const token = jwt.sign({ userNick }, process.env.SECRET_TOKEN_KEY, {
+      expiresIn: '1h'
+    })
+
+    res.status(200).json({
+      success: true,
+      token: token,
+      msg: 'Usuário cadastrado com sucesso'
+    })
   } catch (error) {
     console.error('Erro interno no servidor:', error)
     res.status(500).json({ error: 'Erro interno no servidor' })
@@ -141,12 +148,36 @@ app.post('/signin', async (req, res) => {
       return res.status(401).json({ error: 'Senha incorreta' })
     }
 
-    res.status(200).json({ success: true, msg: 'Usuário logado' })
+    const token = jwt.sign({ userNick }, process.env.SECRET_TOKEN_KEY, {
+      expiresIn: '1h'
+    })
+
+    res.status(200).json({ success: true, token: token, msg: 'Usuário logado' })
   } catch (error) {
     console.error('Erro interno no servidor:', error)
     res.status(500).json({ error: 'Erro interno no servidor' })
   }
 })
+
+app.get('/verify-token', authenticateToken, (req, res) => {
+  res.json({ userId: req.user.userId })
+})
+
+// Função de middleware para verificar o token de autenticação
+function authenticateToken(req, res, next) {
+  const token =
+    req.headers.authorization && req.headers.authorization.split(' ')[1]
+
+  if (token == null)
+    return res.status(401).json({ message: 'Token não fornecido' })
+
+  jwt.verify(token, process.env.SECRET_TOKEN_KEY, (err, user) => {
+    if (err) return res.status(403).json({ message: 'Token inválido' })
+
+    req.user = user
+    next()
+  })
+}
 
 // Socket.IO
 io.on('connection', (socket) => {
