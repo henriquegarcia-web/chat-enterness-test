@@ -7,8 +7,13 @@ import React, {
   useState
 } from 'react'
 
+import { useAuth } from './AuthContext'
+
+import { createRoom } from '@/lib/socket'
+
 interface ChatContextData {
   userId: string | null
+  handleCreateRoom: ({ roomName }: { roomName: string }) => Promise<void>
 }
 
 // ===================================================================
@@ -18,7 +23,29 @@ export const ChatContext = createContext<ChatContextData>({} as ChatContextData)
 const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   // =================================================================
 
-  const [userId, setUserId] = useState<string | null>(null)
+  const { userId } = useAuth()
+
+  useEffect(() => {
+    console.log(userId)
+  }, [userId])
+
+  const handleCreateRoom = useCallback(
+    async ({ roomName }: { roomName: string }) => {
+      try {
+        if (!userId) return
+
+        const createRoomResponse = await createRoom({
+          roomName,
+          createdBy: userId
+        })
+
+        console.log(createRoomResponse)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    [userId]
+  )
 
   // =================================================================
 
@@ -29,9 +56,10 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
   const ChatContextValues = useMemo(() => {
     return {
-      userId
+      userId,
+      handleCreateRoom
     }
-  }, [userId])
+  }, [userId, handleCreateRoom])
 
   return (
     <ChatContext.Provider value={ChatContextValues}>

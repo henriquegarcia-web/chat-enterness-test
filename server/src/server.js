@@ -210,35 +210,6 @@ app.get('/rooms', async (req, res) => {
   }
 })
 
-// io.on('connection', (socket) => {
-//   console.log('Novo usuário conectado')
-
-//   socket.on('sendMessage', async (data) => {
-//     try {
-//       const { salaID, userID, mensagem } = data
-//       const timestamp = moment().toISOString()
-//       await Message.create({
-//         messageContent: mensagem,
-//         messageSender: userID,
-//         messageRoom: salaID,
-//         messageTimestamp: timestamp
-//       })
-//       io.emit('novaMensagem', {
-//         messageContent: mensagem,
-//         messageSender: userID,
-//         messageRoom: salaID,
-//         messageTimestamp: timestamp
-//       })
-//     } catch (error) {
-//       console.error('Erro ao enviar mensagem:', error)
-//     }
-//   })
-
-//   socket.on('disconnect', () => {
-//     console.log('Usuário desconectado')
-//   })
-// })
-
 // Conexão com o Socket.IO
 io.on('connection', (socket) => {
   console.log('Novo usuário conectado')

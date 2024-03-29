@@ -58,10 +58,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem('user_token')
   }
 
-  // useEffect(() => {
-  //   console.log(userId)
-  // }, [userId])
-
   const AuthContextValues = useMemo(() => {
     return {
       userId,

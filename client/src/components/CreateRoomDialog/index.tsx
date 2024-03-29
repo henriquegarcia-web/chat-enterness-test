@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { Dialog, InputField } from '@/components'
 import { useToast } from '@/components/ui/use-toast'
 
+import { useChat } from '@/contexts/ChatContext'
+
 import * as Yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
@@ -22,6 +24,7 @@ interface ICreateRoomDialog {}
 
 const CreateRoomDialog = ({}: ICreateRoomDialog) => {
   const { toast } = useToast()
+  const { handleCreateRoom } = useChat()
 
   const [createRoomIsLoading, setCreateRoomIsLoading] = useState(false)
 
@@ -40,13 +43,15 @@ const CreateRoomDialog = ({}: ICreateRoomDialog) => {
     setCreateRoomIsLoading(true)
 
     try {
-      // const response = await handleCreateRoom(data)
-      const response = true
+      const response = await handleCreateRoom({
+        roomName: data.roomName
+      })
+      // const response = true
 
-      if (response) {
-        // window.location.reload()
-        reset()
-      }
+      // if (response) {
+      //   // window.location.reload()
+      //   reset()
+      // }
 
       // toast({
       //   title: response.success ? 'Sucesso' : 'Falha',
