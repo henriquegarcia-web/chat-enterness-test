@@ -141,6 +141,18 @@ app.use(express.json())
 app.use(bodyParser.json())
 app.use(cors())
 
+// Observador para criação de sala
+Room.afterCreate(async (room) => {
+  const updatedRooms = await Room.findAll()
+  io.emit('updateRooms', updatedRooms)
+})
+
+// Observador para exclusão de sala (se necessário)
+Room.afterDestroy(async () => {
+  const updatedRooms = await Room.findAll()
+  io.emit('updateRooms', updatedRooms)
+})
+
 // ========================================== ROTAS DE AUTENTICAÇÃO
 
 // Rota de cadastro
@@ -245,6 +257,15 @@ io.on('connection', (socket) => {
   socket.on('entryRoom', (roomId) => {
     socket.join(`room-${roomId}`)
     console.log(`Usuário entrou na sala ${roomId}`)
+
+    // try {
+    //   const room = await Room.findByPk(roomId);
+    //   if (room) {
+    //     io.emit('roomDetails', room);
+    //   }
+    // } catch (error) {
+    //   console.error('Erro ao buscar detalhes da sala:', error);
+    // }
   })
 
   // Função de criar sala
@@ -259,7 +280,7 @@ io.on('connection', (socket) => {
       }
 
       const room = await Room.create({ roomName, createdBy: user.userId })
-      io.emit('newRoom', room)
+      io.emit('updateRooms', await Room.findAll())
     } catch (error) {
       console.error('Erro ao criar sala:', error)
     }

@@ -19,13 +19,16 @@ import {
   Menu,
   Package2,
   Search,
-  ShoppingCart
+  ShoppingCart,
+  MessagesSquare
 } from 'lucide-react'
 
 import { useAuth } from '@/contexts/AuthContext'
+import { useChat } from '@/contexts/ChatContext'
 
 const ChatPage = () => {
   const { handleLogout } = useAuth()
+  const { rooms } = useChat()
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -36,26 +39,29 @@ const ChatPage = () => {
           </div>
           <div className="flex-1">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-              <div className="mb-2">
-                <CreateRoomDialog />
-              </div>
-              <Link
-                to="#"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              >
-                <Home className="h-4 w-4" />
-                Dashboard
-              </Link>
-              <Link
-                to="#"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              >
-                <ShoppingCart className="h-4 w-4" />
-                Orders
-                <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                  6
-                </Badge>
-              </Link>
+              <ul>
+                <li className="mb-2">
+                  <CreateRoomDialog />
+                </li>
+
+                {rooms.map((room) => {
+                  const isRoomActive = false
+                  const roomLinkClass = isRoomActive ? 'bg-muted' : ''
+
+                  return (
+                    <li
+                      key={`room-${room.roomId}`}
+                      className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:cursor-pointer active:bg-muted ${roomLinkClass}`}
+                    >
+                      <MessagesSquare className="h-4 w-4" />
+                      {room.roomName}
+                      {/* <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                      6
+                    </Badge> */}
+                    </li>
+                  )
+                })}
+              </ul>
             </nav>
           </div>
         </div>
@@ -75,34 +81,31 @@ const ChatPage = () => {
             </SheetTrigger>
             {/* @ts-ignore */}
             <SheetContent side="left" className="flex flex-col">
-              <nav className="grid gap-2 text-lg font-medium">
-                <div className="py-5">
-                  <CreateRoomDialog />
-                </div>
-                <Link
-                  to="#"
-                  className="flex items-center gap-2 text-lg font-semibold"
-                >
-                  <Package2 className="h-6 w-6" />
-                  <span className="sr-only">Acme Inc</span>
-                </Link>
-                <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                >
-                  <Home className="h-5 w-5" />
-                  Dashboard
-                </Link>
-                <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                  Orders
-                  <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                    6
-                  </Badge>
-                </Link>
+              <nav>
+                <ul className="flex flex-col">
+                  <li className="py-5">
+                    <CreateRoomDialog />
+                  </li>
+                  <ul className="flex flex-col gap-y-2">
+                    {rooms.map((room) => {
+                      const isRoomActive = false
+                      const roomLinkClass = isRoomActive ? 'bg-muted' : ''
+
+                      return (
+                        <li
+                          key={`room-${room.roomId}`}
+                          className={`flex items-center gap-4 rounded-xl px-3 py-2 text-foreground hover:text-foreground active:bg-muted ${roomLinkClass}`}
+                        >
+                          <MessagesSquare className="h-4 w-4" />
+                          {room.roomName}
+                          {/* <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                            6
+                          </Badge> */}
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </ul>
               </nav>
             </SheetContent>
           </Sheet>

@@ -7,14 +7,15 @@ import React, {
   useState
 } from 'react'
 
+import io from 'socket.io-client'
+const socket = io(import.meta.env.VITE_SERVER_URL)
+
 import { useAuth } from './AuthContext'
 
-import { createRoom } from '@/lib/socket'
+import { createRoom, entryRoom } from '@/lib/socket'
 
-interface ChatContextData {
-  userId: string | null
-  handleCreateRoom: ({ roomName }: { roomName: string }) => Promise<void>
-}
+import { ChatContextData, Message, Room } from '@/@types/contexts'
+import { api } from '@/api'
 
 // ===================================================================
 
@@ -25,27 +26,57 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
   const { userId } = useAuth()
 
+  const [rooms, setRooms] = useState<Room[]>([])
+  const [messages, setMessages] = useState<Message[]>([])
+
+  // =================================================================
+
   useEffect(() => {
-    console.log(userId)
-  }, [userId])
+    const getRooms = async () => {
+      try {
+        const response = await api.get('/rooms')
+        const data = response.data
+        setRooms(data)
+      } catch (error) {
+        console.error('Erro ao buscar salas:', error)
+      }
+    }
+
+    getRooms()
+
+    socket.on('updateRooms', (updatedRooms) => {
+      setRooms(updatedRooms)
+    })
+
+    return () => {
+      socket.off('updateRooms')
+    }
+  }, [])
 
   const handleCreateRoom = useCallback(
     async ({ roomName }: { roomName: string }) => {
       try {
-        if (!userId) return
+        if (!userId) return false
 
-        const createRoomResponse = await createRoom({
+        await createRoom({
           roomName,
           createdBy: userId
         })
 
-        console.log(createRoomResponse)
+        return true
       } catch (error) {
         console.log(error)
+        return false
       }
     },
     [userId]
   )
+
+  // =================================================================
+
+  useEffect(() => {
+    console.log('SALAS ====>', rooms)
+  }, [rooms])
 
   // =================================================================
 
@@ -57,9 +88,11 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const ChatContextValues = useMemo(() => {
     return {
       userId,
+      rooms,
+      messages,
       handleCreateRoom
     }
-  }, [userId, handleCreateRoom])
+  }, [userId, rooms, messages, handleCreateRoom])
 
   return (
     <ChatContext.Provider value={ChatContextValues}>
