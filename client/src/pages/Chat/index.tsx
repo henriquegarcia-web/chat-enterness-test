@@ -106,8 +106,12 @@ const ChatPage = () => {
                   {currentRoom?.roomName}
                 </h1>
                 <p className="text-xs font-light text-gray-400">
-                  Sala criada por <b>{currentRoom?.createdByName}</b> em{' '}
-                  <b>{timestampToCreationDay(currentRoom?.createdAt || '')}</b>
+                  Sala criada por{' '}
+                  <b className="font-semibold">{currentRoom?.createdByName}</b>{' '}
+                  em{' '}
+                  <b className="font-semibold">
+                    {timestampToCreationDay(currentRoom?.createdAt || '')}
+                  </b>
                 </p>
               </div>
 

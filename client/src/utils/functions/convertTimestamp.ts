@@ -1,3 +1,18 @@
+const monthNames = [
+  'janeiro',
+  'fevereiro',
+  'março',
+  'abril',
+  'maio',
+  'junho',
+  'julho',
+  'agosto',
+  'setembro',
+  'outubro',
+  'novembro',
+  'dezembro'
+]
+
 const timestampToDate = (timestamp: number) => {
   const date = new Date(timestamp * 1000)
 
@@ -21,9 +36,9 @@ const timestampToHours = (timestamp: string): string => {
 const timestampToCreationDay = (timestamp: string): string => {
   const date = new Date(timestamp)
 
-  const day = date.getDate().toString().padStart(2, '0')
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const year = date.getFullYear().toString()
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = monthNames[date.getMonth()]
+  const year = String(date.getFullYear())
 
   return `${day} de ${month} de ${year}`
 }
