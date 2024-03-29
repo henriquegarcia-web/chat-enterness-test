@@ -8,7 +8,9 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const bcrypt = require('bcrypt')
 const moment = require('moment')
+
 const { Sequelize, DataTypes } = require('sequelize')
+const mysql2 = require('mysql2')
 
 const authenticateToken = require('./authMiddleware')
 const jwt = require('jsonwebtoken')
@@ -32,6 +34,7 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: 'mysql',
+    dialectModule: mysql2,
     logging: false
   }
 )
