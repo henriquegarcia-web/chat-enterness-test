@@ -12,7 +12,7 @@ const socket = io(import.meta.env.VITE_SERVER_URL)
 
 import { useAuth } from './AuthContext'
 
-import { createRoom, entryRoom } from '@/lib/socket'
+import { createRoom, entryRoom, sendMessage } from '@/lib/socket'
 
 import { ChatContextData, Message, Room } from '@/@types/contexts'
 import { api } from '@/api'
@@ -28,8 +28,31 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [rooms, setRooms] = useState<Room[]>([])
   const [messages, setMessages] = useState<Message[]>([])
+  const [currentRoom, setCurrentRoom] = useState<number | null>(null)
 
   // =================================================================
+
+  // useEffect(() => {
+  //   const getRooms = async () => {
+  //     try {
+  //       const response = await api.get('/rooms')
+  //       const data = response.data
+  //       setRooms(data)
+  //     } catch (error) {
+  //       console.error('Erro ao buscar salas:', error)
+  //     }
+  //   }
+
+  //   getRooms()
+
+  //   socket.on('updateRooms', (updatedRooms) => {
+  //     setRooms(updatedRooms)
+  //   })
+
+  //   return () => {
+  //     socket.off('updateRooms')
+  //   }
+  // }, [])
 
   useEffect(() => {
     const getRooms = async () => {
@@ -48,8 +71,13 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       setRooms(updatedRooms)
     })
 
+    socket.on('newMesssage', (newMessage) => {
+      setMessages((prevMessages) => [...prevMessages, newMessage])
+    })
+
     return () => {
       socket.off('updateRooms')
+      socket.off('newMesssage')
     }
   }, [])
 
@@ -72,11 +100,41 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     [userId]
   )
 
+  const handleEntryRoom = useCallback(async (roomId: number) => {
+    try {
+      await entryRoom({ roomId })
+      setCurrentRoom(roomId)
+    } catch (error) {
+      console.log(error)
+    }
+  }, [])
+
+  const handleSendMessage = useCallback(
+    async (message: string) => {
+      try {
+        if (!currentRoom || !userId) return
+
+        await sendMessage({
+          roomId: currentRoom,
+          userId,
+          message
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    [currentRoom, userId]
+  )
+
   // =================================================================
 
+  // useEffect(() => {
+  //   console.log('SALAS ====>', rooms)
+  // }, [rooms])
+
   useEffect(() => {
-    console.log('SALAS ====>', rooms)
-  }, [rooms])
+    console.log('SALA ATIVA ====>', currentRoom, messages)
+  }, [currentRoom, messages])
 
   // =================================================================
 
@@ -90,9 +148,20 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       userId,
       rooms,
       messages,
-      handleCreateRoom
+      currentRoom,
+      handleCreateRoom,
+      handleEntryRoom,
+      handleSendMessage
     }
-  }, [userId, rooms, messages, handleCreateRoom])
+  }, [
+    userId,
+    rooms,
+    messages,
+    currentRoom,
+    handleCreateRoom,
+    handleEntryRoom,
+    handleSendMessage
+  ])
 
   return (
     <ChatContext.Provider value={ChatContextValues}>

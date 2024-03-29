@@ -28,7 +28,7 @@ import { useChat } from '@/contexts/ChatContext'
 
 const ChatPage = () => {
   const { handleLogout } = useAuth()
-  const { rooms } = useChat()
+  const { handleEntryRoom, currentRoom, rooms } = useChat()
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -45,13 +45,14 @@ const ChatPage = () => {
                 </li>
 
                 {rooms.map((room) => {
-                  const isRoomActive = false
+                  const isRoomActive = currentRoom === room.roomId
                   const roomLinkClass = isRoomActive ? 'bg-muted' : ''
 
                   return (
                     <li
                       key={`room-${room.roomId}`}
                       className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:cursor-pointer active:bg-muted ${roomLinkClass}`}
+                      onClick={() => handleEntryRoom(room.roomId)}
                     >
                       <MessagesSquare className="h-4 w-4" />
                       {room.roomName}
@@ -88,13 +89,14 @@ const ChatPage = () => {
                   </li>
                   <ul className="flex flex-col gap-y-2">
                     {rooms.map((room) => {
-                      const isRoomActive = false
+                      const isRoomActive = currentRoom === room.roomId
                       const roomLinkClass = isRoomActive ? 'bg-muted' : ''
 
                       return (
                         <li
                           key={`room-${room.roomId}`}
                           className={`flex items-center gap-4 rounded-xl px-3 py-2 text-foreground hover:text-foreground active:bg-muted ${roomLinkClass}`}
+                          onClick={() => handleEntryRoom(room.roomId)}
                         >
                           <MessagesSquare className="h-4 w-4" />
                           {room.roomName}

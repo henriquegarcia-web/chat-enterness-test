@@ -242,7 +242,7 @@ io.on('connection', (socket) => {
         messageRoom: roomId,
         messageTimestamp: timestamp
       })
-      io.to(`room-${roomId}`).emit('novaMensagem', {
+      io.to(`room-${roomId}`).emit('newMesssage', {
         messageContent: mensagem,
         messageSender: userId,
         messageRoom: roomId,

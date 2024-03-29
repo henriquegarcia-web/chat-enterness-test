@@ -1,11 +1,11 @@
 export interface ISendMessage {
-  roomId: string
+  roomId: number
   userId: string
   message: string
 }
 
 export interface IEntryRoom {
-  roomId: string
+  roomId: number
 }
 
 export interface ICreateRoom {

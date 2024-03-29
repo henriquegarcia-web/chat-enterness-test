@@ -19,5 +19,8 @@ export interface ChatContextData {
   userId: string | null
   rooms: Room[]
   messages: Message[]
+  currentRoom: number | null
   handleCreateRoom: ({ roomName }: { roomName: string }) => Promise<boolean>
+  handleEntryRoom: (roomId: number) => Promise<void>
+  handleSendMessage: (message: string) => Promise<void>
 }
