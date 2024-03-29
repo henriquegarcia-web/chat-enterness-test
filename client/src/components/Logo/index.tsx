@@ -5,7 +5,9 @@ interface ILogo {
 }
 
 const Logo = ({ minify = false }: ILogo) => {
-  const logoSizeClasses = minify ? 'text-lg leading-10' : 'text-4xl leading-6'
+  const logoSizeClasses = minify
+    ? 'text-lg leading-none mb-[-2px]'
+    : 'text-4xl leading-6'
   const iconSizeClasses = minify ? 'text-3xl' : 'text-5xl'
 
   return (

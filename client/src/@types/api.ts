@@ -19,3 +19,8 @@ export interface ICustomErrorAuth {
 export interface ICustomErrorAuthForm {
   message: string
 }
+
+export interface ICreateRoomForm {
+  roomName: string
+  roomId: string
+}

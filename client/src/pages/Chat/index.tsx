@@ -1,25 +1,8 @@
 import { Link } from 'react-router-dom'
-import {
-  Bell,
-  CircleUser,
-  Home,
-  LineChart,
-  Menu,
-  Package,
-  Package2,
-  Search,
-  ShoppingCart,
-  Users
-} from 'lucide-react'
+
+import { CreateRoomDialog, Logo } from '@/components'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,17 +13,21 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import {
+  CircleUser,
+  Home,
+  Menu,
+  Package2,
+  Search,
+  ShoppingCart
+} from 'lucide-react'
 
 import { useAuth } from '@/contexts/AuthContext'
-import { Logo } from '@/components'
 
 const ChatPage = () => {
   const { handleLogout } = useAuth()
 
   return (
-    // <div className="">
-    //   <Button onClick={handleLogout}>Logout</Button>
-    // </div>
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-muted/40 md:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
@@ -49,7 +36,9 @@ const ChatPage = () => {
           </div>
           <div className="flex-1">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-              <Button className="mb-3">Criar sala</Button>
+              <div className="mb-2">
+                <CreateRoomDialog />
+              </div>
               <Link
                 to="#"
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
@@ -87,7 +76,8 @@ const ChatPage = () => {
             {/* @ts-ignore */}
             <SheetContent side="left" className="flex flex-col">
               <nav className="grid gap-2 text-lg font-medium">
-                <Button>Criar sala</Button>
+                <CreateRoomDialog />
+
                 <Link
                   to="#"
                   className="flex items-center gap-2 text-lg font-semibold"
