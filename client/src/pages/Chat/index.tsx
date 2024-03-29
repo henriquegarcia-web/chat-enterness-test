@@ -1,7 +1,6 @@
-import { Link } from 'react-router-dom'
+import { CircleUser, Menu, Search, MessagesSquare } from 'lucide-react'
 
-import { CreateRoomDialog, Logo } from '@/components'
-import { Badge } from '@/components/ui/badge'
+import { ChatInputField, CreateRoomDialog, Logo } from '@/components'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -13,15 +12,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import {
-  CircleUser,
-  Home,
-  Menu,
-  Package2,
-  Search,
-  ShoppingCart,
-  MessagesSquare
-} from 'lucide-react'
 
 import { useAuth } from '@/contexts/AuthContext'
 import { useChat } from '@/contexts/ChatContext'
@@ -147,14 +137,14 @@ const ChatPage = () => {
           <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
             <div className="flex flex-col items-center gap-1 text-center">
               <h3 className="text-2xl font-bold tracking-tight">
-                You have no products
+                Inicie uma Conversa
               </h3>
               <p className="text-sm text-muted-foreground">
-                You can start selling as soon as you add a product.
+                Escolha uma das salas disponíveis para começar a conversar.
               </p>
-              <Button className="mt-4">Add Product</Button>
             </div>
           </div>
+          <ChatInputField />
         </main>
       </div>
     </div>

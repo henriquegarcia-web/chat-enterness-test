@@ -36,7 +36,7 @@ const InputField = ({
       name={id}
       control={control}
       render={({ field, fieldState: { error } }) => (
-        <div className="flex flex-col space-y-2.5">
+        <div className="flex flex-1 flex-col space-y-2.5">
           {!!label && label !== '' && <Label htmlFor={id}>{label}</Label>}
           <div className="relative flex items-center">
             <Input
