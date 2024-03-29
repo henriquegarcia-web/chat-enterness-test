@@ -75,13 +75,13 @@
   }
 }
 
-:root {
+/* :root {
   font-size: 14px;
 
   @media screen and (min-width: 1024px) {
     font-size: 16px;
   }
-}
+} */
 
 * {
   box-sizing: border-box;
@@ -94,14 +94,16 @@
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
+  border-radius: 10px;
   z-index: 1000;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #ff7a00;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.8);
 }

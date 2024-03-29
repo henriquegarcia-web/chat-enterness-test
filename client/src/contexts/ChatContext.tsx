@@ -7,14 +7,11 @@ import React, {
   useState
 } from 'react'
 
-import io from 'socket.io-client'
-// const socket = io(import.meta.env.VITE_SERVER_URL)
-
 import { useAuth } from './AuthContext'
 
 import { createRoom, entryRoom, sendMessage, useSocket } from '@/lib/socket'
 
-import { IChatContextData, IMessage, Room } from '@/@types/contexts'
+import { IChatContextData, IMessage, IRoom } from '@/@types/contexts'
 import { api } from '@/api'
 
 // ===================================================================
@@ -28,9 +25,9 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const socket = useSocket()
   const { userId } = useAuth()
 
-  const [rooms, setRooms] = useState<Room[]>([])
+  const [rooms, setRooms] = useState<IRoom[]>([])
   const [messages, setMessages] = useState<IMessage[]>([])
-  const [currentRoom, setCurrentRoom] = useState<number | null>(null)
+  const [currentRoom, setCurrentRoom] = useState<IRoom | null>(null)
 
   // =================================================================
 
@@ -73,7 +70,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     const getMessages = async () => {
       try {
         const response = await api.post('/messages', {
-          roomId: currentRoom
+          roomId: currentRoom.roomId
         })
         const data = response.data
         setMessages(data)
@@ -85,7 +82,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     getMessages()
 
     socket.on('newMesssage', (newMessage) => {
-      if (newMessage.messageRoom === currentRoom) {
+      if (newMessage.messageRoom === currentRoom.roomId) {
         setMessages((prevMessages) => [...prevMessages, newMessage])
       }
     })
@@ -94,6 +91,8 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       socket.off('newMesssage')
     }
   }, [socket, currentRoom])
+
+  // =================================================================
 
   const handleCreateRoom = useCallback(
     async ({ roomName }: { roomName: string }) => {
@@ -115,10 +114,10 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   )
 
   const handleEntryRoom = useCallback(
-    async (roomId: number) => {
+    async (room: IRoom) => {
       try {
-        await entryRoom(socket, { roomId })
-        setCurrentRoom(roomId)
+        await entryRoom(socket, { roomId: room.roomId })
+        setCurrentRoom(room)
       } catch (error) {
         console.log(error)
       }
@@ -132,7 +131,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         if (!currentRoom || !userId) return false
 
         await sendMessage(socket, {
-          roomId: currentRoom,
+          roomId: currentRoom.roomId,
           userId,
           message
         })
@@ -146,21 +145,6 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   )
 
   // =================================================================
-
-  // useEffect(() => {
-  //   console.log('SALAS ====>', rooms)
-  // }, [rooms])
-
-  useEffect(() => {
-    console.log('SALA ATIVA ====>', currentRoom, messages)
-  }, [currentRoom, messages])
-
-  // =================================================================
-
-  // useEffect(() => {
-  //   console.log('LOGADO ======>', isAdminLogged, userId)
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [isAdminLogged])
 
   const ChatContextValues = useMemo(() => {
     return {

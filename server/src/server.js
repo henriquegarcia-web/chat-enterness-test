@@ -166,10 +166,14 @@ app.post('/signup', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(userPassword, 10)
-    await User.create({ userName, userNick, userPassword: hashedPassword })
+    const newUser = await User.create({
+      userName,
+      userNick,
+      userPassword: hashedPassword
+    })
 
     const token = jwt.sign(
-      { userId: user.userId, userName: user.userName, userNick },
+      { userId: newUser.userId, userName, userNick },
       process.env.SECRET_TOKEN_KEY,
       {
         expiresIn: '1h'

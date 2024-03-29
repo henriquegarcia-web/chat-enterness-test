@@ -15,7 +15,7 @@ export interface IAuthContextData {
 
 // ================================================ CHAT CONTEXT
 
-export interface Room {
+export interface IRoom {
   roomId: number
   roomName: string
 }
@@ -30,10 +30,10 @@ export interface IMessage {
 
 export interface IChatContextData {
   userId: string | null
-  rooms: Room[]
+  rooms: IRoom[]
   messages: IMessage[]
-  currentRoom: number | null
+  currentRoom: IRoom | null
   handleCreateRoom: ({ roomName }: { roomName: string }) => Promise<boolean>
-  handleEntryRoom: (roomId: number) => Promise<void>
+  handleEntryRoom: (room: IRoom) => Promise<void>
   handleSendMessage: (message: string) => Promise<boolean>
 }
