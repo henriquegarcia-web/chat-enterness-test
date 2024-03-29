@@ -235,6 +235,21 @@ app.get('/rooms', async (req, res) => {
   }
 })
 
+// Obtém listagem das mensagens
+app.post('/messages', async (req, res) => {
+  const { roomId } = req.body
+
+  try {
+    const messages = await Message.findAll({
+      where: { messageRoom: roomId }
+    })
+    res.status(200).json(messages)
+  } catch (error) {
+    console.error('Erro ao buscar mensagens:', error)
+    res.status(500).json({ error: 'Erro interno no servidor' })
+  }
+})
+
 // Conexão com o Socket.IO
 io.on('connection', (socket) => {
   console.log('Novo usuário conectado')
@@ -242,17 +257,19 @@ io.on('connection', (socket) => {
   // Função de enviar mensagem
   socket.on('sendMessage', async (data) => {
     try {
-      const { roomId, userId, mensagem } = data
+      const { roomId, userId, message } = data
+      const user = await User.findOne({ where: { userNick: userId } })
+
       const timestamp = moment().toISOString()
       await Message.create({
-        messageContent: mensagem,
-        messageSender: userId,
+        messageContent: message,
+        messageSender: user.userId,
         messageRoom: roomId,
         messageTimestamp: timestamp
       })
       io.to(`room-${roomId}`).emit('newMesssage', {
-        messageContent: mensagem,
-        messageSender: userId,
+        messageContent: message,
+        messageSender: user.userId,
         messageRoom: roomId,
         messageTimestamp: timestamp
       })
@@ -265,15 +282,6 @@ io.on('connection', (socket) => {
   socket.on('entryRoom', (roomId) => {
     socket.join(`room-${roomId}`)
     console.log(`Usuário entrou na sala ${roomId}`)
-
-    // try {
-    //   const room = await Room.findByPk(roomId);
-    //   if (room) {
-    //     io.emit('roomDetails', room);
-    //   }
-    // } catch (error) {
-    //   console.error('Erro ao buscar detalhes da sala:', error);
-    // }
   })
 
   // Função de criar sala

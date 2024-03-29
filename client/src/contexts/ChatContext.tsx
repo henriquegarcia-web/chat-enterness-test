@@ -32,27 +32,14 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
   // =================================================================
 
-  // useEffect(() => {
-  //   const getRooms = async () => {
-  //     try {
-  //       const response = await api.get('/rooms')
-  //       const data = response.data
-  //       setRooms(data)
-  //     } catch (error) {
-  //       console.error('Erro ao buscar salas:', error)
-  //     }
-  //   }
-
-  //   getRooms()
-
-  //   socket.on('updateRooms', (updatedRooms) => {
-  //     setRooms(updatedRooms)
-  //   })
-
-  //   return () => {
-  //     socket.off('updateRooms')
-  //   }
-  // }, [])
+  useEffect(() => {
+    if (socket) {
+      socket.connect()
+      return () => {
+        socket.disconnect()
+      }
+    }
+  }, [socket])
 
   useEffect(() => {
     if (!userId || !socket) return
@@ -73,15 +60,38 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       setRooms(updatedRooms)
     })
 
+    return () => {
+      socket.off('updateRooms')
+    }
+  }, [socket, userId])
+
+  useEffect(() => {
+    if (!currentRoom || !socket) return
+
+    const getMessages = async () => {
+      try {
+        const response = await api.post('/messages', {
+          roomId: currentRoom
+        })
+        const data = response.data
+        setMessages(data)
+      } catch (error) {
+        console.error('Erro ao buscar mensagens:', error)
+      }
+    }
+
+    getMessages()
+
     socket.on('newMesssage', (newMessage) => {
-      setMessages((prevMessages) => [...prevMessages, newMessage])
+      if (newMessage.messageRoom === currentRoom) {
+        setMessages((prevMessages) => [...prevMessages, newMessage])
+      }
     })
 
     return () => {
-      socket.off('updateRooms')
       socket.off('newMesssage')
     }
-  }, [socket, userId])
+  }, [socket, currentRoom])
 
   const handleCreateRoom = useCallback(
     async ({ roomName }: { roomName: string }) => {
