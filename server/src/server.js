@@ -191,13 +191,13 @@ io.on('connection', (socket) => {
         messageContent: mensagem,
         messageSender: userID,
         messageRoom: salaID,
-        timestamp
+        messageTimestamp: timestamp
       })
       io.emit('novaMensagem', {
-        conteudo: mensagem,
-        remetente: userID,
-        sala: salaID,
-        timestamp
+        messageContent: mensagem,
+        messageSender: userID,
+        messageRoom: salaID,
+        messageTimestamp: timestamp
       })
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error)
