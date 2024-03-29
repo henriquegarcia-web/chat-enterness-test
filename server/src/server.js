@@ -266,6 +266,38 @@ app.post('/messages', async (req, res) => {
   }
 })
 
+// Rota para exclusão de sala
+app.delete('/rooms/:roomId', async (req, res) => {
+  const { roomId } = req.params
+  const { userId } = req.body
+
+  try {
+    const room = await Room.findByPk(roomId)
+    if (!room) {
+      return res.status(404).json({ error: 'Sala não encontrada' })
+    }
+
+    // Verificar se o usuário atual é o criador da sala
+    if (room.createdBy !== userId) {
+      return res
+        .status(403)
+        .json({ error: 'Apenas o criador pode excluir a sala' })
+    }
+
+    await room.destroy()
+
+    const updatedRooms = await Room.findAll()
+    io.emit('updateRooms', updatedRooms)
+
+    res
+      .status(200)
+      .json({ success: true, message: 'Sala excluída com sucesso' })
+  } catch (error) {
+    console.error('Erro ao excluir sala:', error)
+    res.status(500).json({ error: 'Erro interno no servidor' })
+  }
+})
+
 // Conexão com o Socket.IO
 io.on('connection', (socket) => {
   console.log('Novo usuário conectado')

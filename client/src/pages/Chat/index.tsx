@@ -15,7 +15,6 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
 import { useChat } from '@/contexts/ChatContext'
 import { useAuth } from '@/contexts/AuthContext'
-import { timestampToCreationDay } from '@/utils/functions/convertTimestamp'
 
 const ChatPage = () => {
   const { userInfos } = useAuth()
@@ -102,7 +101,7 @@ const ChatPage = () => {
         <main className="flex flex-1 flex-col gap-4 p-4 h-[calc(100%-60px)]">
           {currentRoom ? (
             <>
-              <ChatHeader currentRoom={currentRoom} />
+              <ChatHeader />
 
               <div className="flex flex-1 items-end p-4 rounded-lg border border-dashed shadow-sm h-[calc(100%-100px)]">
                 <ChatWrapper

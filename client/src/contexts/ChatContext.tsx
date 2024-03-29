@@ -23,7 +23,7 @@ export const ChatContext = createContext<IChatContextData>(
 const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   // =================================================================
   const socket = useSocket()
-  const { userId } = useAuth()
+  const { userId, userInfos } = useAuth()
 
   const [rooms, setRooms] = useState<IRoom[]>([])
   const [messages, setMessages] = useState<IMessage[]>([])
@@ -31,6 +31,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
   // =================================================================
 
+  // Conexão com o Socket.IO
   useEffect(() => {
     if (socket) {
       socket.connect()
@@ -40,6 +41,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [socket])
 
+  // Observador das salas
   useEffect(() => {
     if (!userId || !socket) return
 
@@ -64,6 +66,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [socket, userId])
 
+  // Observador das mensagens
   useEffect(() => {
     if (!currentRoom || !socket) return
 
@@ -92,8 +95,26 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [socket, currentRoom])
 
+  // Observador para verificar se a sala ativa foi excluída
+  useEffect(() => {
+    const checkActiveRoom = () => {
+      if (!currentRoom || !rooms.length) return
+
+      const activeRoomExists = rooms.some(
+        (room) => room.roomId === currentRoom.roomId
+      )
+
+      if (!activeRoomExists) {
+        setCurrentRoom(null)
+      }
+    }
+
+    checkActiveRoom()
+  }, [rooms, currentRoom])
+
   // =================================================================
 
+  // Função de criar sala
   const handleCreateRoom = useCallback(
     async ({ roomName }: { roomName: string }) => {
       try {
@@ -113,6 +134,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     [socket, userId]
   )
 
+  // Função de entrar em uma sala
   const handleEntryRoom = useCallback(
     async (room: IRoom) => {
       try {
@@ -125,6 +147,25 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     [socket]
   )
 
+  // Função de deletar uma sala
+  const handleDeleteRoom = useCallback(async () => {
+    try {
+      if (!currentRoom || !userInfos) return false
+
+      await api.delete(`/rooms/${currentRoom.roomId}`, {
+        data: { userId: userInfos.userId }
+      })
+
+      setCurrentRoom(null)
+
+      return true
+    } catch (error) {
+      console.error('Erro ao excluir sala:', error)
+      return false
+    }
+  }, [currentRoom, userInfos])
+
+  // Função de enviar mensagem
   const handleSendMessage = useCallback(
     async (message: string) => {
       try {
@@ -154,6 +195,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       currentRoom,
       handleCreateRoom,
       handleEntryRoom,
+      handleDeleteRoom,
       handleSendMessage
     }
   }, [
@@ -163,6 +205,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     currentRoom,
     handleCreateRoom,
     handleEntryRoom,
+    handleDeleteRoom,
     handleSendMessage
   ])
 

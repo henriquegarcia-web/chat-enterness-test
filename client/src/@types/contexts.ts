@@ -18,6 +18,7 @@ export interface IAuthContextData {
 export interface IRoom {
   roomId: number
   roomName: string
+  createdBy: number
   createdByName: string
   createdAt: string
 }
@@ -38,5 +39,6 @@ export interface IChatContextData {
   currentRoom: IRoom | null
   handleCreateRoom: ({ roomName }: { roomName: string }) => Promise<boolean>
   handleEntryRoom: (room: IRoom) => Promise<void>
+  handleDeleteRoom: () => Promise<boolean>
   handleSendMessage: (message: string) => Promise<boolean>
 }
