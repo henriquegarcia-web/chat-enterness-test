@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { SmilePlus, Send, Loader2 } from 'lucide-react'
+import { Send, Loader2 } from 'lucide-react'
 
 import { InputField } from '@/components'
 import { Button } from '@/components/ui/button'
@@ -24,7 +24,7 @@ interface IChatInputField {}
 
 const ChatInputField = ({}: IChatInputField) => {
   const { toast } = useToast()
-  const { handleSendMessage } = useChat()
+  const { handleSendMessage, currentRoom } = useChat()
 
   const [submitMessageIsLoading, setSubmitMessageIsLoading] = useState(false)
 
@@ -63,22 +63,21 @@ const ChatInputField = ({}: IChatInputField) => {
       className="flex w-full items-center space-x-2"
       onSubmit={handleSubmit(handleSubmitMessage)}
     >
-      <Button type="button" variant="outline" size="icon">
-        <SmilePlus className="h-5 w-5" />
-      </Button>
       <InputField
         id="message"
         placeholder="Digite sua mensagem ..."
         withoutErrors
         autoComplete={false}
         withoutFocus
+        withEmojiPicker
+        disabled={!currentRoom}
         control={control}
       />
       <Button
         type="submit"
         variant="outline"
         size="icon"
-        disabled={!isValid || submitMessageIsLoading}
+        disabled={!isValid || submitMessageIsLoading || !currentRoom}
       >
         {submitMessageIsLoading ? (
           <Loader2 className="h-5 w-5 animate-spin" />
