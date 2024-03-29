@@ -76,8 +76,9 @@ const ChatPage = () => {
             {/* @ts-ignore */}
             <SheetContent side="left" className="flex flex-col">
               <nav className="grid gap-2 text-lg font-medium">
-                <CreateRoomDialog />
-
+                <div className="py-5">
+                  <CreateRoomDialog />
+                </div>
                 <Link
                   to="#"
                   className="flex items-center gap-2 text-lg font-semibold"

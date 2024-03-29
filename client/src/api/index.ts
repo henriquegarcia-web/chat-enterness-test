@@ -8,7 +8,7 @@ import {
 import { ISignupForm, ISigninForm, ICustomErrorAuth } from '@/@types/api'
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL
+  baseURL: import.meta.env.VITE_SERVER_URL
 })
 
 const handleSignup = async ({

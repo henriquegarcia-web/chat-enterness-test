@@ -12,6 +12,7 @@ import React, {
 import { api } from '@/api'
 
 interface AuthContextData {
+  userId: string | null
   isUserLogged: boolean
   handleLogout: () => void
 }
@@ -23,7 +24,11 @@ export const AuthContext = createContext<AuthContextData>({} as AuthContextData)
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // =================================================================
 
-  const [isUserLogged, setIsUserLogged] = useState<boolean>(false)
+  const [userId, setUserId] = useState<string | null>(null)
+
+  const isUserLogged = useMemo(() => {
+    return !!userId
+  }, [userId])
 
   // =================================================================
 
@@ -37,9 +42,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       })
       .then((response) => {
-        setIsUserLogged(response.status === 200)
+        setUserId(response.data.userId || null)
       })
-      .catch(() => {})
+      .catch(() => {
+        setUserId(null)
+      })
   }
 
   useEffect(() => {
@@ -47,16 +54,21 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [])
 
   const handleLogout = () => {
-    setIsUserLogged(false)
+    setUserId(null)
     localStorage.removeItem('user_token')
   }
 
+  // useEffect(() => {
+  //   console.log(userId)
+  // }, [userId])
+
   const AuthContextValues = useMemo(() => {
     return {
+      userId,
       isUserLogged,
       handleLogout
     }
-  }, [isUserLogged])
+  }, [userId, isUserLogged])
 
   return (
     <AuthContext.Provider value={AuthContextValues}>

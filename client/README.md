@@ -8,7 +8,7 @@
 
 2. Crie um arquivo .env na raiz da pasta 'client' com os dados:
 
-   `VITE_BASE_URL=http://localhost:5000`
+   `VITE_SERVER_URL=http://localhost:5000`
 
 3. Inicie o servidor de desenvolvimento:
 

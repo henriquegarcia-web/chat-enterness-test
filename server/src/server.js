@@ -5,8 +5,10 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const bcrypt = require('bcrypt')
 const moment = require('moment')
-const jwt = require('jsonwebtoken')
 const { Sequelize, DataTypes } = require('sequelize')
+
+const authenticateToken = require('./authMiddleware')
+const jwt = require('jsonwebtoken')
 
 // Carrega variáveis de ambiente
 require('dotenv').config()
@@ -78,7 +80,7 @@ const Message = sequelize.define('messages', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  timestamp: {
+  messageTimestamp: {
     type: DataTypes.DATE,
     defaultValue: Sequelize.NOW
   },
@@ -93,6 +95,38 @@ const Message = sequelize.define('messages', {
   }
 })
 
+// Definição do modelo Room
+const Room = sequelize.define('rooms', {
+  roomId: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  roomName: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  createdBy: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+  },
+  updatedAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+  }
+})
+
+// Relacionamentos entre modelos
+User.hasMany(Room, { foreignKey: 'createdBy' })
+Room.belongsTo(User, { foreignKey: 'createdBy' })
+Room.hasMany(Message, { foreignKey: 'messageRoom' })
+Message.belongsTo(Room, { foreignKey: 'messageRoom' })
+
 // Relacionamentos entre modelos
 User.hasMany(Message, { foreignKey: 'messageSender' })
 Message.belongsTo(User, { foreignKey: 'messageSender' })
@@ -102,11 +136,9 @@ app.use(express.json())
 app.use(bodyParser.json())
 app.use(cors())
 
-// Rotas
-app.get('/rooms', (req, res) => {
-  // Implementação das salas ativas
-})
+// ========================================== ROTAS DE AUTENTICAÇÃO
 
+// Rota de cadastro
 app.post('/signup', async (req, res) => {
   const { userName, userNick, userPassword } = req.body
 
@@ -134,6 +166,7 @@ app.post('/signup', async (req, res) => {
   }
 })
 
+// Rota de login
 app.post('/signin', async (req, res) => {
   const { userNick, userPassword } = req.body
 
@@ -159,48 +192,93 @@ app.post('/signin', async (req, res) => {
   }
 })
 
+// Rota de validação do token
 app.get('/verify-token', authenticateToken, (req, res) => {
-  res.json({ userId: req.user.userId })
+  res.json({ userId: req.user.userNick })
 })
 
-// Função de middleware para verificar o token de autenticação
-function authenticateToken(req, res, next) {
-  const token =
-    req.headers.authorization && req.headers.authorization.split(' ')[1]
+// ========================================== ROTAS DO CHAT
 
-  if (token == null)
-    return res.status(401).json({ message: 'Token não fornecido' })
+// Obtém listagem das salas
+app.get('/rooms', async (req, res) => {
+  try {
+    const rooms = await Room.findAll()
+    res.status(200).json(rooms)
+  } catch (error) {
+    console.error('Erro ao buscar salas:', error)
+    res.status(500).json({ error: 'Erro interno no servidor' })
+  }
+})
 
-  jwt.verify(token, process.env.SECRET_TOKEN_KEY, (err, user) => {
-    if (err) return res.status(403).json({ message: 'Token inválido' })
+// io.on('connection', (socket) => {
+//   console.log('Novo usuário conectado')
 
-    req.user = user
-    next()
-  })
-}
+//   socket.on('sendMessage', async (data) => {
+//     try {
+//       const { salaID, userID, mensagem } = data
+//       const timestamp = moment().toISOString()
+//       await Message.create({
+//         messageContent: mensagem,
+//         messageSender: userID,
+//         messageRoom: salaID,
+//         messageTimestamp: timestamp
+//       })
+//       io.emit('novaMensagem', {
+//         messageContent: mensagem,
+//         messageSender: userID,
+//         messageRoom: salaID,
+//         messageTimestamp: timestamp
+//       })
+//     } catch (error) {
+//       console.error('Erro ao enviar mensagem:', error)
+//     }
+//   })
 
-// Socket.IO
+//   socket.on('disconnect', () => {
+//     console.log('Usuário desconectado')
+//   })
+// })
+
+// Conexão com o Socket.IO
 io.on('connection', (socket) => {
   console.log('Novo usuário conectado')
 
-  socket.on('enviarMensagem', async (data) => {
+  // Função de enviar mensagem
+  socket.on('sendMessage', async (data) => {
     try {
-      const { salaID, userID, mensagem } = data
+      const { roomId, userId, mensagem } = data
       const timestamp = moment().toISOString()
       await Message.create({
         messageContent: mensagem,
-        messageSender: userID,
-        messageRoom: salaID,
+        messageSender: userId,
+        messageRoom: roomId,
         messageTimestamp: timestamp
       })
-      io.emit('novaMensagem', {
+      io.to(`room-${roomId}`).emit('novaMensagem', {
         messageContent: mensagem,
-        messageSender: userID,
-        messageRoom: salaID,
+        messageSender: userId,
+        messageRoom: roomId,
         messageTimestamp: timestamp
       })
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error)
+    }
+  })
+
+  // Função de entrar na sala
+  socket.on('entryRoom', (roomId) => {
+    socket.join(`room-${roomId}`)
+    console.log(`Usuário entrou na sala ${roomId}`)
+  })
+
+  // Função de criar sala
+  socket.on('createRoom', async (data) => {
+    try {
+      const { roomName, createdBy } = data
+      const room = await Room.create({ roomName, createdBy })
+      io.emit('newRoom', room)
+    } catch (error) {
+      console.error('Erro ao criar sala:', error)
     }
   })
 
