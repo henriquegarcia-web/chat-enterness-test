@@ -1,21 +1,50 @@
-import io from 'socket.io-client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { useMemo } from 'react'
+
+import io, { Socket } from 'socket.io-client'
+
+import { useAuth } from '@/contexts/AuthContext'
 
 import { ICreateRoom, IEntryRoom, ISendMessage } from '@/@types/socket'
 
-const socket = io(import.meta.env.VITE_SERVER_URL)
+export const useSocket = () => {
+  const { isUserLogged } = useAuth()
 
-export const sendMessage = async ({
-  roomId,
-  userId,
-  message
-}: ISendMessage) => {
+  // Criação do socket apenas se o usuário estiver logado
+  const socket = useMemo(() => {
+    if (isUserLogged) {
+      return io(import.meta.env.VITE_SERVER_URL)
+    }
+    return null
+  }, [isUserLogged])
+
+  return socket
+}
+
+export const sendMessage = async (
+  socket: Socket<any, any> | null,
+  { roomId, userId, message }: ISendMessage
+) => {
+  if (!socket) return
+
   await socket.emit('sendMessage', { roomId, userId, message })
 }
 
-export const entryRoom = async ({ roomId }: IEntryRoom) => {
+export const entryRoom = async (
+  socket: Socket<any, any> | null,
+  { roomId }: IEntryRoom
+) => {
+  if (!socket) return
+
   await socket.emit('entryRoom', roomId)
 }
 
-export const createRoom = async ({ roomName, createdBy }: ICreateRoom) => {
+export const createRoom = async (
+  socket: Socket<any, any> | null,
+  { roomName, createdBy }: ICreateRoom
+) => {
+  if (!socket) return
+
   await socket.emit('createRoom', { roomName, createdBy })
 }

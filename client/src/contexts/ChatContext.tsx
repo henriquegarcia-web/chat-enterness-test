@@ -8,11 +8,11 @@ import React, {
 } from 'react'
 
 import io from 'socket.io-client'
-const socket = io(import.meta.env.VITE_SERVER_URL)
+// const socket = io(import.meta.env.VITE_SERVER_URL)
 
 import { useAuth } from './AuthContext'
 
-import { createRoom, entryRoom, sendMessage } from '@/lib/socket'
+import { createRoom, entryRoom, sendMessage, useSocket } from '@/lib/socket'
 
 import { ChatContextData, Message, Room } from '@/@types/contexts'
 import { api } from '@/api'
@@ -23,7 +23,7 @@ export const ChatContext = createContext<ChatContextData>({} as ChatContextData)
 
 const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   // =================================================================
-
+  const socket = useSocket()
   const { userId } = useAuth()
 
   const [rooms, setRooms] = useState<Room[]>([])
@@ -55,6 +55,8 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   // }, [])
 
   useEffect(() => {
+    if (!userId || !socket) return
+
     const getRooms = async () => {
       try {
         const response = await api.get('/rooms')
@@ -79,14 +81,14 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       socket.off('updateRooms')
       socket.off('newMesssage')
     }
-  }, [])
+  }, [socket, userId])
 
   const handleCreateRoom = useCallback(
     async ({ roomName }: { roomName: string }) => {
       try {
         if (!userId) return false
 
-        await createRoom({
+        await createRoom(socket, {
           roomName,
           createdBy: userId
         })
@@ -97,24 +99,27 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         return false
       }
     },
-    [userId]
+    [socket, userId]
   )
 
-  const handleEntryRoom = useCallback(async (roomId: number) => {
-    try {
-      await entryRoom({ roomId })
-      setCurrentRoom(roomId)
-    } catch (error) {
-      console.log(error)
-    }
-  }, [])
+  const handleEntryRoom = useCallback(
+    async (roomId: number) => {
+      try {
+        await entryRoom(socket, { roomId })
+        setCurrentRoom(roomId)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    [socket]
+  )
 
   const handleSendMessage = useCallback(
     async (message: string) => {
       try {
         if (!currentRoom || !userId) return false
 
-        await sendMessage({
+        await sendMessage(socket, {
           roomId: currentRoom,
           userId,
           message
@@ -125,7 +130,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         return false
       }
     },
-    [currentRoom, userId]
+    [socket, currentRoom, userId]
   )
 
   // =================================================================

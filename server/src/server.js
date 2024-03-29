@@ -296,7 +296,7 @@ io.on('connection', (socket) => {
   try {
     await sequelize.authenticate()
     console.log('Conectado ao banco de dados MySQL')
-    await sequelize.sync({ alter: true })
+    await sequelize.sync()
     const PORT = process.env.SERVER_PORT || 5000
     server.listen(PORT, () => {
       console.log('Server running on the port:', PORT)
