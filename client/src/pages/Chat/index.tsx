@@ -1,6 +1,7 @@
 import { Menu, MessagesSquare } from 'lucide-react'
 
 import {
+  ChatHeader,
   ChatInputField,
   ChatWrapper,
   CreateRoomDialog,
@@ -101,19 +102,7 @@ const ChatPage = () => {
         <main className="flex flex-1 flex-col gap-4 p-4 h-[calc(100%-60px)]">
           {currentRoom ? (
             <>
-              <div className="flex content-center flex-col gap-y-1">
-                <h1 className="text-xl font-semibold">
-                  {currentRoom?.roomName}
-                </h1>
-                <p className="text-xs font-light text-gray-400">
-                  Sala criada por{' '}
-                  <b className="font-semibold">{currentRoom?.createdByName}</b>{' '}
-                  em{' '}
-                  <b className="font-semibold">
-                    {timestampToCreationDay(currentRoom?.createdAt || '')}
-                  </b>
-                </p>
-              </div>
+              <ChatHeader currentRoom={currentRoom} />
 
               <div className="flex flex-1 items-end p-4 rounded-lg border border-dashed shadow-sm h-[calc(100%-100px)]">
                 <ChatWrapper
