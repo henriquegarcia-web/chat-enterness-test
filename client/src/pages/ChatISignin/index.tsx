@@ -94,7 +94,11 @@ const ChatISigninPage = () => {
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Button variant="outline" onClick={() => navigate('/cadastrar')}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate('/cadastrar')}
+            >
               Não tenho cadastro
             </Button>
             <Button type="submit" disabled={!isValid || signinIsLoading}>

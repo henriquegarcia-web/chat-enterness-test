@@ -17,7 +17,7 @@ export const throwSigninError = (response: number) => {
     case 404:
       return 'Senha incorreta'
     case 500:
-      return 'Erro ao processar a solicitação de cadastro'
+      return 'Erro ao processar a solicitação de login'
 
     default:
       return 'Erro interno no servidor'

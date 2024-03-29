@@ -124,7 +124,11 @@ const ChatISignupPage = () => {
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Button variant="outline" onClick={() => navigate('/entrar')}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate('/entrar')}
+            >
               Já tenho conta
             </Button>
             <Button type="submit" disabled={!isValid || signupIsLoading}>

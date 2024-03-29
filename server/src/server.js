@@ -1,115 +1,129 @@
+const express = require('express')
+const http = require('http')
+const socketIo = require('socket.io')
+const bodyParser = require('body-parser')
+const cors = require('cors')
+const bcrypt = require('bcrypt')
+const moment = require('moment')
+const { Sequelize, DataTypes } = require('sequelize')
+
+// Carrega variáveis de ambiente
 require('dotenv').config()
 
-const express = require('express')
+// Inicialização do aplicativo Express
 const app = express()
-
-const http = require('http')
 const server = http.createServer(app)
-const socketIo = require('socket.io')
 const io = socketIo(server)
 
-const bodyParser = require('body-parser')
-const mysql = require('mysql')
-const cors = require('cors')
-const moment = require('moment')
+// Configuração do banco de dados Sequelize
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST,
+    dialect: 'mysql',
+    logging: false
+  }
+)
 
-const bcrypt = require('bcrypt')
-const saltRounds = 10
+// Definição do modelo User
+const User = sequelize.define('users', {
+  userId: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  userName: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  userNick: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true
+  },
+  userPassword: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+  },
+  updatedAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+  }
+})
 
+// Definição do modelo Message
+const Message = sequelize.define('messages', {
+  messageId: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  messageContent: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  messageSender: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  messageRoom: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  timestamp: {
+    type: DataTypes.DATE,
+    defaultValue: Sequelize.NOW
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+  },
+  updatedAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+  }
+})
+
+// Relacionamentos entre modelos
+User.hasMany(Message, { foreignKey: 'messageSender' })
+Message.belongsTo(User, { foreignKey: 'messageSender' })
+
+// Middlewares
 app.use(express.json())
 app.use(bodyParser.json())
 app.use(cors())
 
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'chat_enterness_test'
-})
-
-db.connect((err) => {
-  if (err) {
-    console.log('Erro ao conectar ao banco de dados MySQL:', err)
-    throw err
-  }
-  console.log('Conectado ao banco de dados MySQL')
-})
-
-app.get('/salas', (req, res) => {
-  const query = 'SELECT * FROM Salas'
-  db.query(query, (err, results) => {
-    if (err) {
-      console.log('Erro ao buscar as salas:', err)
-      res.status(500).json({ error: 'Erro ao buscar as salas' })
-      return
-    }
-    res.json(results)
-  })
-})
-
-io.on('connection', (socket) => {
-  console.log('Novo usuário conectado')
-
-  socket.on('enviarMensagem', (data) => {
-    const { salaID, userID, mensagem } = data
-    const timestamp = new Date().toISOString()
-    const query =
-      'INSERT INTO Mensagens (conteudo, remetente, sala, timestamp) VALUES (?, ?, ?, ?)'
-    db.query(query, [mensagem, userID, salaID, timestamp], (err, result) => {
-      if (err) {
-        console.log('Erro ao enviar mensagem:', err)
-        return
-      }
-      io.emit('novaMensagem', {
-        mensagemID: result.insertId,
-        conteudo: mensagem,
-        remetente: userID,
-        sala: salaID,
-        timestamp: timestamp
-      })
-    })
-  })
-
-  socket.on('disconnect', () => {
-    console.log('Usuário desconectado')
-  })
+// Rotas
+app.get('/rooms', (req, res) => {
+  // Implementação das salas ativas
 })
 
 app.post('/signup', async (req, res) => {
   const { userName, userNick, userPassword } = req.body
 
   try {
-    db.query(
-      'SELECT * FROM users WHERE user_nick = ?',
-      [userNick],
-      (err, result) => {
-        if (err) {
-          res.send(err)
-        }
-        if (result.length == 0) {
-          bcrypt.hash(userPassword, saltRounds, (err, hash) => {
-            db.query(
-              'INSERT INTO users (user_name, user_nick, user_password) VALUE (?,?,?)',
-              [userName, userNick, hash],
-              (error, response) => {
-                if (err) {
-                  res.send(err)
-                }
+    const existingUser = await User.findOne({ where: { userNick } })
+    if (existingUser) {
+      return res.status(400).json({ error: 'Usuário já cadastrado' })
+    }
 
-                res.status(200).send({
-                  success: true,
-                  msg: 'Usuário cadastrado com sucesso'
-                })
-              }
-            )
-          })
-        } else {
-          res.status(400).send({ error: 'Usuário já cadastrado' })
-        }
-      }
-    )
-  } catch (err) {
-    res.status(500).send({ error: 'Erro interno no servidor' })
+    const hashedPassword = await bcrypt.hash(userPassword, 10)
+    await User.create({ userName, userNick, userPassword: hashedPassword })
+
+    res
+      .status(200)
+      .json({ success: true, msg: 'Usuário cadastrado com sucesso' })
+  } catch (error) {
+    console.error('Erro interno no servidor:', error)
+    res.status(500).json({ error: 'Erro interno no servidor' })
   }
 })
 
@@ -117,45 +131,64 @@ app.post('/signin', async (req, res) => {
   const { userNick, userPassword } = req.body
 
   try {
-    db.query(
-      'SELECT * FROM users WHERE user_nick = ?',
-      [userNick],
-      (err, result) => {
-        if (err) {
-          res.send(err)
-        }
-        if (result.length > 0) {
-          bcrypt.compare(
-            userPassword,
-            result[0].user_password,
-            (error, response) => {
-              if (error) {
-                res.send(error)
-              }
+    const user = await User.findOne({ where: { userNick } })
+    if (!user) {
+      return res.status(401).json({ error: 'Usuário não registrado' })
+    }
 
-              if (response) {
-                res.status(200).send({ success: true, msg: 'Usuário logado' })
-              } else {
-                res.status(404).send({ error: 'Senha incorreta' })
-              }
-            }
-          )
-        } else {
-          res.status(401).send({ error: 'Usuário não registrado' })
-        }
-      }
-    )
-  } catch (err) {
-    res.status(500).send({ error: 'Erro interno no servidor' })
+    const passwordMatch = await bcrypt.compare(userPassword, user.userPassword)
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Senha incorreta' })
+    }
+
+    res.status(200).json({ success: true, msg: 'Usuário logado' })
+  } catch (error) {
+    console.error('Erro interno no servidor:', error)
+    res.status(500).json({ error: 'Erro interno no servidor' })
   }
 })
 
-app.get('/rooms', (req, res) => {
-  res.json(activeRooms)
+// Socket.IO
+io.on('connection', (socket) => {
+  console.log('Novo usuário conectado')
+
+  socket.on('enviarMensagem', async (data) => {
+    try {
+      const { salaID, userID, mensagem } = data
+      const timestamp = moment().toISOString()
+      await Message.create({
+        messageContent: mensagem,
+        messageSender: userID,
+        messageRoom: salaID,
+        timestamp
+      })
+      io.emit('novaMensagem', {
+        conteudo: mensagem,
+        remetente: userID,
+        sala: salaID,
+        timestamp
+      })
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error)
+    }
+  })
+
+  socket.on('disconnect', () => {
+    console.log('Usuário desconectado')
+  })
 })
 
-const PORT = process.env.SERVER_PORT || 5000
-
-app.listen(PORT, () => {
-  console.log('Server running on the port:', PORT)
-})
+// Sincronização do modelo com o banco de dados e inicialização do servidor
+;(async () => {
+  try {
+    await sequelize.authenticate()
+    console.log('Conectado ao banco de dados MySQL')
+    await sequelize.sync({ alter: true })
+    const PORT = process.env.SERVER_PORT || 5000
+    server.listen(PORT, () => {
+      console.log('Server running on the port:', PORT)
+    })
+  } catch (error) {
+    console.error('Erro ao conectar ao banco de dados MySQL:', error)
+  }
+})()
