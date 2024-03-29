@@ -9,6 +9,9 @@ interface IInputField {
   id: string
   placeholder: string
   typePassword?: boolean
+  withoutErrors?: boolean
+  withoutFocus?: boolean
+  autoComplete?: boolean
 }
 
 import { Input } from '@/components/ui/input'
@@ -19,7 +22,10 @@ const InputField = ({
   label,
   id,
   placeholder,
-  typePassword = false
+  typePassword = false,
+  withoutErrors = false,
+  withoutFocus = false,
+  autoComplete = true
 }: IInputField) => {
   const [passwordIsVisible, setPasswordIsVisible] = useState(false)
 
@@ -45,6 +51,8 @@ const InputField = ({
               value={field.value}
               onChange={field.onChange}
               type={inputType}
+              autoComplete={autoComplete ? 'on' : 'off'}
+              className={withoutFocus ? 'focus-visible:ring-0' : ''}
             />
             {typePassword && (
               <span className="password-icon" onClick={tooglePassword}>
@@ -52,7 +60,7 @@ const InputField = ({
               </span>
             )}
           </div>
-          {error && (
+          {error && !withoutErrors && (
             <span className="text-xs text-red-500">{error.message}</span>
           )}
         </div>

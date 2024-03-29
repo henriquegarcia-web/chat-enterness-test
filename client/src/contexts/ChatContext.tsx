@@ -112,15 +112,17 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const handleSendMessage = useCallback(
     async (message: string) => {
       try {
-        if (!currentRoom || !userId) return
+        if (!currentRoom || !userId) return false
 
         await sendMessage({
           roomId: currentRoom,
           userId,
           message
         })
+        return true
       } catch (error) {
         console.log(error)
+        return false
       }
     },
     [currentRoom, userId]
