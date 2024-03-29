@@ -18,7 +18,7 @@ import { useForm } from 'react-hook-form'
 
 import { handleSignup } from '@/api'
 
-import { ISignupForm } from '@/@types/api'
+import { ICustomErrorAuthForm, ISignupForm } from '@/@types/api'
 import { InputField } from '@/components'
 
 const signupSchema = Yup.object().shape({
@@ -72,10 +72,11 @@ const ChatISignupPage = () => {
         title: response.success ? 'Sucesso' : 'Falha',
         description: response.msg
       })
-    } catch (error: any) {
+    } catch (error) {
+      const customError = error as ICustomErrorAuthForm
       toast({
         title: 'Falha',
-        description: error.message
+        description: customError.message
       })
     } finally {
       setSignupIsLoading(false)

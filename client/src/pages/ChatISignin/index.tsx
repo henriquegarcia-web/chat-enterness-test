@@ -19,7 +19,7 @@ import { useForm } from 'react-hook-form'
 
 import { handleSignin } from '@/api'
 
-import { ISigninForm } from '@/@types/api'
+import { ICustomErrorAuthForm, ISigninForm } from '@/@types/api'
 
 const signinSchema = Yup.object().shape({
   userNick: Yup.string().required(),
@@ -56,10 +56,10 @@ const ChatISigninPage = () => {
         description: response.msg
       })
     } catch (error) {
+      const customError = error as ICustomErrorAuthForm
       toast({
-        title: 'Erro',
-        description:
-          'Erro ao fazer login, por favor, tente novamente mais tarde.'
+        title: 'Falha',
+        description: customError.message
       })
     } finally {
       setSigninIsLoading(false)

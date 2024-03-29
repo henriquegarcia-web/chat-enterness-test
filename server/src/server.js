@@ -117,26 +117,34 @@ app.post('/signin', async (req, res) => {
   const { userNick, userPassword } = req.body
 
   try {
-    const user = await db.query('SELECT * FROM users WHERE user_nick = ?', [
-      userNick
-    ])
+    db.query(
+      'SELECT * FROM users WHERE user_nick = ?',
+      [userNick],
+      (err, result) => {
+        if (err) {
+          res.send(err)
+        }
+        if (result.length > 0) {
+          bcrypt.compare(
+            userPassword,
+            result[0].user_password,
+            (error, response) => {
+              if (error) {
+                res.send(error)
+              }
 
-    if (user.length === 0) {
-      res.status(401).send({ error: 'Usuário não registrado' })
-      return
-    }
-
-    bcrypt.compare(userPassword, user[0].user_password, (error, response) => {
-      if (error) {
-        res.status(500).send({ error: 'Erro interno no servidor' })
-        return
+              if (response) {
+                res.status(200).send({ success: true, msg: 'Usuário logado' })
+              } else {
+                res.status(404).send({ error: 'Senha incorreta' })
+              }
+            }
+          )
+        } else {
+          res.status(401).send({ error: 'Usuário não registrado' })
+        }
       }
-      if (response) {
-        res.status(200).send({ success: true, msg: 'Usuário logado' })
-      } else {
-        res.status(404).send({ error: 'Senha incorreta' })
-      }
-    })
+    )
   } catch (err) {
     res.status(500).send({ error: 'Erro interno no servidor' })
   }
@@ -151,7 +159,3 @@ const PORT = process.env.SERVER_PORT || 5000
 app.listen(PORT, () => {
   console.log('Server running on the port:', PORT)
 })
-
-// app.get('/teste', async (req, res) => {
-//   res.send('Teste')
-// })
