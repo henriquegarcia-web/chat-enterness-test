@@ -49,3 +49,8 @@ RealtimeChat é uma aplicação web que oferece funcionalidades de chat em tempo
 ## Agradecimentos
 
 - Agradecimento especial à empresa [ENTERness](https://www.enterness.com/site/) por disponibilizar o teste.
+
+## Bugs Identificados
+
+- Ao inserir um emoji, se não houver um texto após o emoji, ele é excluído ao fechar o modal do EmojiPicker.
+- Responsividade da listagem de salas não foi 100% estruturada.
