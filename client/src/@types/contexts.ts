@@ -18,6 +18,8 @@ export interface IAuthContextData {
 export interface IRoom {
   roomId: number
   roomName: string
+  createdByName: string
+  createdAt: string
 }
 
 export interface IMessage {

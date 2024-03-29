@@ -1,4 +1,4 @@
-function timestampToDate(timestamp: number) {
+const timestampToDate = (timestamp: number) => {
   const date = new Date(timestamp * 1000)
 
   const day = String(date.getDate()).padStart(2, '0')
@@ -18,4 +18,14 @@ const timestampToHours = (timestamp: string): string => {
   return `${hours}:${minutes}`
 }
 
-export { timestampToDate, timestampToHours }
+const timestampToCreationDay = (timestamp: string): string => {
+  const date = new Date(timestamp)
+
+  const day = date.getDate().toString().padStart(2, '0')
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const year = date.getFullYear().toString()
+
+  return `${day} de ${month} de ${year}`
+}
+
+export { timestampToDate, timestampToHours, timestampToCreationDay }

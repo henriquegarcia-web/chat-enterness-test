@@ -119,6 +119,10 @@ const Room = sequelize.define('rooms', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
+  createdByName: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
   createdAt: {
     type: DataTypes.DATE,
     defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
@@ -303,7 +307,11 @@ io.on('connection', (socket) => {
         return
       }
 
-      const room = await Room.create({ roomName, createdBy: user.userId })
+      const room = await Room.create({
+        roomName,
+        createdBy: user.userId,
+        createdByName: user.userName
+      })
       io.emit('updateRooms', await Room.findAll())
     } catch (error) {
       console.error('Erro ao criar sala:', error)

@@ -14,6 +14,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
 import { useChat } from '@/contexts/ChatContext'
 import { useAuth } from '@/contexts/AuthContext'
+import { timestampToCreationDay } from '@/utils/functions/convertTimestamp'
 
 const ChatPage = () => {
   const { userInfos } = useAuth()
@@ -98,15 +99,25 @@ const ChatPage = () => {
           <UserDropdown />
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 h-[calc(100%-60px)]">
-          <div className="flex items-center">
-            <h1 className="text-lg font-semibold md:text-2xl">
-              {currentRoom?.roomName}
-            </h1>
-          </div>
           {currentRoom ? (
-            <div className="flex flex-1 items-end p-4 rounded-lg border border-dashed shadow-sm h-[calc(100%-100px)]">
-              <ChatWrapper messages={messages} activeUser={userInfos?.userId} />
-            </div>
+            <>
+              <div className="flex content-center flex-col gap-y-1">
+                <h1 className="text-xl font-semibold">
+                  {currentRoom?.roomName}
+                </h1>
+                <p className="text-xs font-light text-gray-400">
+                  Sala criada por <b>{currentRoom?.createdByName}</b> em{' '}
+                  <b>{timestampToCreationDay(currentRoom?.createdAt || '')}</b>
+                </p>
+              </div>
+
+              <div className="flex flex-1 items-end p-4 rounded-lg border border-dashed shadow-sm h-[calc(100%-100px)]">
+                <ChatWrapper
+                  messages={messages}
+                  activeUser={userInfos?.userId}
+                />
+              </div>
+            </>
           ) : (
             <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
               <NotSelectedChat />
