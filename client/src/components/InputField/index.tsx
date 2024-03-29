@@ -78,7 +78,10 @@ const InputField = ({
   useClickOutside({
     active: showEmojiPicker,
     containerRef: emojiContainerRef,
-    onClickOutside: () => setShowEmojiPicker(false)
+    onClickOutside: () => {
+      setShowEmojiPicker(false)
+      setEmoji('')
+    }
   })
 
   return (
