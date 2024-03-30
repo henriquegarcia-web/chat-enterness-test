@@ -24,10 +24,11 @@
 
 2. Crie um arquivo .env na raiz da pasta 'server' com os dados:
 
-   `DB_HOST=localhost` <br/>
-   `DB_USER=root` <br/>
-   `DB_PASSWORD=` <br/>
-   `DB_NAME=chat_enterness_test` <br/>
+   `DB_HOST=mgs0iaapcj3p9srz.cbetxkdyhwsb.us-east-1.rds.amazonaws.com`<br/>
+   `DB_USER=s7ujnjni8xsgc7z6`<br/>
+   `DB_PASSWORD=mjwsdqm8jk64gnw1`<br/>
+   `DB_NAME=t4j4s571cbfbzk2k`<br/>
+   `DB_PORT=3306`<br/>
    `SERVER_PORT=5000` <br/>
    `CLIENT_URL=http://localhost:5173` <br/>
    `SECRET_TOKEN_KEY=A1B2C3D4E5F6G7H8I9J0`
